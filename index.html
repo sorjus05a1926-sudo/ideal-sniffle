@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歴史人物ソナー | 210人超の偉人から導く魂の共鳴診断</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --font-serif: 'Shippori Mincho', serif;
+            --font-sans: 'Noto Sans JP', sans-serif;
+        }
+        body {
+            font-family: var(--font-sans);
+            background-color: #f8f5f0;
+            color: #1e293b;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(217, 119, 6, 0.06) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(30, 58, 138, 0.06) 0px, transparent 50%);
+            min-height: 100vh;
+        }
+        .font-serif-jp {
+            font-family: var(--font-serif);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1ede4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(217, 119, 6, 0.18);
+            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #78350f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .option-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+        }
+        .option-btn.selected {
+            background-color: #fef3c7;
+            border-color: #d97706;
+            color: #92400e;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Print Styles */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #1e293b !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .glass-card {
+                background: #ffffff !important;
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                break-inside: avoid;
+                margin-bottom: 16px !important;
+            }
+            #result-screen {
+                display: block !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-amber-200 selection:text-amber-900">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-amber-900/10 no-print">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <button onclick="app.showScreen('start')" class="flex items-center gap-2.5 text-left group focus:outline-none">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center text-amber-400 shadow-sm group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-compass text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-serif-jp font-bold text-lg sm:text-xl tracking-wider text-slate-800 block leading-none">歴史人物ソナー</span>
+                    <span class="text-[10px] text-slate-500 tracking-widest uppercase">Historical Persona Diagnostics</span>
+                </div>
+            </button>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="app.openDirectory()" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-open text-amber-600"></i>
+                    <span>偉人図鑑 (<span id="total-char-badge">217</span>人)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10">
+
+        <!-- ==================== 1. START SCREEN ==================== -->
+        <section id="start-screen" class="animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 sm:p-12 text-center relative overflow-hidden">
+                <!-- Decorative background icon -->
+                <i class="fa-solid fa-hourglass-half text-9xl text-amber-900/5 absolute -right-6 -bottom-6 transform rotate-12 pointer-events-none"></i>
+                
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100/80 text-amber-900 text-xs font-bold mb-6 border border-amber-300/50">
+                    <i class="fa-solid fa-sparkles text-amber-600"></i>
+                    <span>日本史・世界史 210名以上のデータベース搭載</span>
+                </div>
+
+                <h1 class="font-serif-jp text-3xl sm:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
+                    あなたの魂と共鳴する<br>
+                    <span class="gold-gradient-text">歴史上の偉人</span>は誰か？
+                </h1>
+
+                <p class="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
+                    全18問の質問から、あなたの「性格・価値観・行動パターン・リーダーシップ」を6つの評価軸で多角的に分析。戦国武将、幕末の志士、古代の哲学者、科学者、芸術家、世界の皇帝まで、<strong>210人以上の多様な歴史人物</strong>の中からあなたに最も近いトップ5を理由とともに導き出します。
+                </p>
+
+                <!-- 6 Axes Preview -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-9 text-left">
+                    <div class="bg-slate-50/90 p-3 rounded-xl border border-slate-200/70 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-lightbulb"></i></div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">革新・創造性</div>
+                            <div class="text-[11px] text-slate-500">常識を打破する力</div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/90 p-3 rounded-xl border border-slate-200/70 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-red-100 text-red-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-bolt"></i></div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">行動・決断力</div>
+                            <div class="text-[11px] text-slate-500">好機を掴む突破力</div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/90 p-3 rounded-xl border border-slate-200/70 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-people-group"></i></div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">協調・包容力</div>
+                            <div class="text-[11px] text-slate-500">人を活かし繋ぐ力</div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/90 p-3 rounded-xl border border-slate-200/70 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-chess"></i></div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">知略・論理力</div>
+                            <div class="text-[11px] text-slate-500">先を読む冷静な眼</div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/90 p-3 rounded-xl border border-slate-200/70 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-fire"></i></div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">情熱・大義</div>
+                            <div class="text-[11px] text-slate-500">信念を貫く精神力</div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/90 p-3 rounded-xl border border-slate-200/70 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center shrink-0"><i class="fa-solid fa-palette"></i></div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">文化・感性</div>
+                            <div class="text-[11px] text-slate-500">美と知の探究心</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button onclick="app.startQuiz()" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 hover:from-amber-700 hover:to-amber-600 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3">
+                        <span>診断を開始する（全18問）</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <button onclick="app.openDirectory()" class="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <span>収録人物一覧を見る</span>
+                    </button>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-200/80 text-xs text-slate-500 leading-relaxed max-w-xl mx-auto">
+                    <i class="fa-solid fa-circle-info text-amber-600 mr-1"></i>
+                    <strong>【免責事項】</strong> 本アプリは歴史上の人物の逸話や一般的なパブリックイメージをもとに設計された<strong>娯楽目的のキャラクター診断</strong>であり、学術的・心理学的な人格判定や史実の厳密な考証を行うものではありません。気軽にお楽しみください。
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 2. QUIZ SCREEN ==================== -->
+        <section id="quiz-screen" class="hidden animate-fade-in">
+            <!-- Progress Header -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-slate-600 mb-2">
+                    <span id="quiz-category-badge" class="px-3 py-1 rounded-full bg-amber-100 text-amber-900">カテゴリ</span>
+                    <span>質問 <span id="current-q-num" class="text-lg text-amber-700 font-serif-jp">1</span> / <span id="total-q-num">18</span></span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-amber-700 transition-all duration-300" style="width: 5%"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="glass-card rounded-3xl p-6 sm:p-10 mb-6">
+                <h2 id="question-text" class="font-serif-jp text-xl sm:text-2xl font-bold text-slate-900 leading-relaxed mb-8 min-h-[3.5rem] flex items-center">
+                    質問文がここに入ります
+                </h2>
+
+                <!-- 5-Step Options -->
+                <div id="options-container" class="space-y-3">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex items-center justify-between gap-4">
+                <button id="prev-btn" onclick="app.prevQuestion()" class="px-5 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-medium text-sm border border-slate-300 transition-colors flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>前の質問へ戻る</span>
+                </button>
+
+                <button onclick="app.restartQuizConfirm()" class="px-4 py-3 rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 font-medium text-xs sm:text-sm transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>最初からやり直す</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== 3. RESULT SCREEN ==================== -->
+        <section id="result-screen" class="hidden animate-fade-in space-y-8">
+            
+            <!-- Top Result Hero Card -->
+            <div class="glass-card rounded-3xl p-6 sm:p-10 relative overflow-hidden border-2 border-amber-500/30">
+                <div class="flex flex-col md:flex-row items-center gap-6 sm:gap-8">
+                    <!-- Icon / Crest Area -->
+                    <div class="relative shrink-0 text-center">
+                        <div id="top1-avatar" class="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl bg-gradient-to-br from-slate-800 to-slate-950 text-amber-400 flex flex-col items-center justify-center shadow-xl border-4 border-amber-200 mx-auto">
+                            <span id="top1-emoji" class="text-5xl sm:text-6xl mb-1">⚔️</span>
+                            <span id="top1-region-tag" class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-200 font-bold">日本史</span>
+                        </div>
+                        <div class="mt-3 inline-flex items-center gap-1 bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                            <i class="fa-solid fa-crown text-amber-200"></i>
+                            <span>シンクロ率 <span id="top1-score" class="text-sm">96</span>%</span>
+                        </div>
+                    </div>
+
+                    <!-- Main Info -->
+                    <div class="flex-grow text-center md:text-left">
+                        <div class="text-xs font-bold tracking-widest text-amber-800 uppercase mb-1">あなたに最も近い歴史上の人物（第1位）</div>
+                        <div id="top1-title" class="text-sm sm:text-base font-medium text-slate-600 mb-1">常識を焼き尽くす天下の革新者</div>
+                        <h2 id="top1-name" class="font-serif-jp text-3xl sm:text-5xl font-extrabold text-slate-900 mb-3">織田信長</h2>
+                        
+                        <div id="top1-badges" class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-4">
+                            <!-- Era & Role badges -->
+                        </div>
+
+                        <p id="top1-desc" class="text-slate-700 text-sm sm:text-base leading-relaxed bg-amber-50/70 p-4 rounded-2xl border border-amber-200/60">
+                            人物の詳細な解説がここに入ります。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Match Reason Box -->
+                <div class="mt-6 pt-6 border-t border-slate-200/80">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i>
+                        <span>なぜこの人物と共鳴したのか？（分析理由）</span>
+                    </h3>
+                    <p id="top1-reason" class="text-xs sm:text-sm text-slate-600 leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- Radar Chart & 6-Axis Breakdown -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Radar Chart -->
+                <div class="lg:col-span-6 glass-card rounded-3xl p-6 flex flex-col items-center justify-center">
+                    <h3 class="font-serif-jp text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-amber-600"></i>
+                        <span>あなたの6軸ステータスと偉人比較</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">青線：あなた ／ 金線：<span id="chart-legend-name">第1位の偉人</span></p>
+                    <div class="w-full max-w-[320px] aspect-square relative flex items-center justify-center">
+                        <canvas id="radarCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <!-- 6-Axis Bars & Personality Summary -->
+                <div class="lg:col-span-6 glass-card rounded-3xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-serif-jp text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-amber-600"></i>
+                            <span>あなたの価値観・行動傾向スコア</span>
+                        </h3>
+                        <div id="user-axes-bars" class="space-y-3.5">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div id="user-type-summary" class="mt-6 p-4 rounded-2xl bg-slate-900 text-slate-100 text-xs sm:text-sm leading-relaxed">
+                        <!-- Summary of user's highest traits -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rank 2 to 5 Similar Figures -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                    <div>
+                        <h3 class="font-serif-jp text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-medal text-amber-600"></i>
+                            <span>類似度トップ 2位〜5位 の歴史人物</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">あなたの中に眠るもうひとつの側面や、異なる時代・地域で近い波長を持つ偉人たちです。</p>
+                    </div>
+                    <!-- Filter tabs for result (All / Japan / World) -->
+                    <div class="inline-flex rounded-xl bg-slate-100 p-1 self-start no-print">
+                        <button onclick="app.setResultFilter('ALL')" id="filter-btn-ALL" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition-all">総合TOP5</button>
+                        <button onclick="app.setResultFilter('JP')" id="filter-btn-JP" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">日本史のみ</button>
+                        <button onclick="app.setResultFilter('WD')" id="filter-btn-WD" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all">世界史のみ</button>
+                    </div>
+                </div>
+
+                <div id="sub-rankings-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Rank 2-5 Cards populated by JS -->
+                </div>
+
+                <!-- Least Similar (Opposite Type) Bonus -->
+                <div class="mt-6 pt-6 border-t border-slate-200/80">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <div class="flex items-center gap-3.5">
+                            <div id="opposite-emoji" class="w-12 h-12 rounded-xl bg-slate-200 flex items-center justify-center text-2xl shrink-0">🛡️</div>
+                            <div>
+                                <div class="text-[11px] font-bold text-slate-500 uppercase">あなたと正反対のタイプ（補完関係にある人物）</div>
+                                <div class="font-serif-jp font-bold text-base text-slate-800"><span id="opposite-name">徳川家康</span> <span id="opposite-score" class="text-xs font-sans font-normal text-slate-500 ml-1">(シンクロ率 42%)</span></div>
+                                <div id="opposite-desc" class="text-xs text-slate-600 mt-0.5">自分にない視点を持つため、タッグを組むと最強の相棒になる可能性があります。</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share & Action Buttons -->
+            <div class="glass-card rounded-3xl p-6 text-center no-print">
+                <h4 class="font-bold text-slate-800 text-sm mb-4">診断結果をシェア・保存する</h4>
+                <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
+                    <button onclick="app.copyResultText()" class="px-5 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow transition-all flex items-center gap-2">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>診断結果をテキストでコピー</span>
+                    </button>
+                    <button onclick="app.shareOnX()" class="px-5 py-3 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-sm shadow transition-all flex items-center gap-2">
+                        <i class="fa-brands fa-x-twitter"></i>
+                        <span>X (旧Twitter) で共有</span>
+                    </button>
+                    <button id="download-pdf-btn" onclick="app.downloadPDF()" class="px-5 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>PDFとして保存</span>
+                    </button>
+                    <button onclick="app.printResult()" class="px-5 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm border border-slate-300 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i>
+                        <span>印刷する</span>
+                    </button>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-center gap-4">
+                    <button onclick="app.startQuiz()" class="text-sm font-bold text-amber-800 hover:text-amber-600 flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>もう一度診断をやり直す</span>
+                    </button>
+                    <span class="text-slate-300">|</span>
+                    <button onclick="app.openDirectory()" class="text-sm font-bold text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-book"></i>
+                        <span>全210人以上の偉人図鑑で他の人物も見る</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Disclaimer Footer inside Result (Visible in Print too) -->
+            <div class="text-center text-xs text-slate-500 px-4 leading-relaxed">
+                ※本診断結果は、歴史上の人物の一般的なイメージや逸話をもとに算出されたエンターテインメント（娯楽）診断であり、学術的・心理学的な人格判定ではありません。
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== DIRECTORY MODAL (210+ Historical Figures) ==================== -->
+    <div id="directory-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 no-print">
+        <div class="bg-[#f8f5f0] w-full max-w-5xl h-[90vh] rounded-3xl shadow-2xl border border-amber-900/20 flex flex-col overflow-hidden animate-fade-in">
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-6 bg-white border-b border-slate-200 flex items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-serif-jp text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-book-journal-whills text-amber-600"></i>
+                        <span>収録・歴史人物大図鑑（全<span id="modal-total-count">217</span>名）</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">日本史・世界史の多様なジャンルから収録。診断後はあなたとのシンクロ率順でも並び替え可能です。</p>
+                </div>
+                <button onclick="app.closeDirectory()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors shrink-0">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Search & Filters Bar -->
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-grow">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="dir-search" oninput="app.renderDirectoryList()" placeholder="人物名・時代・キーワード（例：幕末、科学者、ローマ、信長）で検索..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-300 text-sm focus:outline-none focus:border-amber-600">
+                </div>
+                <div class="flex gap-2">
+                    <select id="dir-region-filter" onchange="app.renderDirectoryList()" class="px-3 py-2.5 rounded-xl bg-white border border-slate-300 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-600">
+                        <option value="ALL">すべて（日本史＋世界史）</option>
+                        <option value="日本史">日本史のみ</option>
+                        <option value="世界史">世界史のみ</option>
+                    </select>
+                    <select id="dir-sort" onchange="app.renderDirectoryList()" class="px-3 py-2.5 rounded-xl bg-white border border-slate-300 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:border-amber-600">
+                        <option value="DEFAULT">時代・カテゴリ順</option>
+                        <option value="MATCH_DESC">あなたとの類似度が高い順</option>
+                        <option value="NAME">名前順</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Directory Grid List -->
+            <div id="dir-list-container" class="flex-grow overflow-y-auto p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 content-start">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== CUSTOM CONFIRM / TOAST MODAL ==================== -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl border border-amber-500/40 flex items-center gap-3 text-sm font-medium animate-fade-in no-print">
+        <i class="fa-solid fa-circle-check text-amber-400 text-lg"></i>
+        <span id="toast-message">コピーしました</span>
+    </div>
+
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center animate-fade-in">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-rotate-left"></i>
+            </div>
+            <h4 class="font-serif-jp font-bold text-lg text-slate-900 mb-2">最初からやり直しますか？</h4>
+            <p class="text-xs text-slate-500 mb-6">現在までの回答進捗はリセットされます。</p>
+            <div class="flex gap-3">
+                <button onclick="app.closeConfirmModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition-colors">キャンセル</button>
+                <button onclick="app.confirmRestart()" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm transition-colors">やり直す</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white/60 border-t border-amber-900/10 py-5 text-center text-xs text-slate-500 no-print mt-auto">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>歴史人物ソナー — 6軸パーソナリティ共鳴システム</div>
+            <div>※単なるイメージに基づく娯楽診断であり、学術的な人格判定ではありません。</div>
+        </div>
+    </footer>
+
+    <!-- ==================== APPLICATION SCRIPT ==================== -->
+    <script>
+        /**
+         * 6 Evaluation Axes Definition:
+         * 0: INN (革新・創造性) - 既存の枠を壊し新しい概念や仕組みを作る
+         * 1: ACT (行動・決断力) - 現場主義・スピード・リスクを恐れない突破力
+         * 2: EMP (協調・包容力) - 人心掌握・外交・チームワーク・優しさ
+         * 3: LOG (知略・論理力) - 計画性・分析・合理主義・長期戦略
+         * 4: PAS (情熱・大義)   - 理想主義・正義感・逆境でも折れない不屈の精神
+         * 5: CUL (文化・感性)   - 芸術・学問・美意識・精神世界の探究
+         */
+        const AXES_INFO = [
+            { id: 'inn', name: '革新・創造性', short: '革新性', icon: 'fa-lightbulb', color: '#d97706', highText: '常識にとらわれない発想と変革を好む', lowText: '伝統や実績ある着実な手法を重んじる' },
+            { id: 'act', name: '行動・決断力', short: '行動力', icon: 'fa-bolt',      color: '#dc2626', highText: '機を見て即座に動く突破力と決断力がある', lowText: '石橋を叩いて渡る慎重さと持続力がある' },
+            { id: 'emp', name: '協調・包容力', short: '協調性', icon: 'fa-people-group', color: '#059669', highText: '周囲への共感力が高く和と対話を大切にする', lowText: '馴れ合いを避け孤高の自立心で道を切り拓く' },
+            { id: 'log', name: '知略・論理力', short: '知略・論理', icon: 'fa-chess',  color: '#2563eb', highText: '客観的なデータと大局観で冷静に戦略を練る', lowText: '理屈よりも直感やその場のライブ感を信じる' },
+            { id: 'pas', name: '情熱・大義',   short: '情熱・大義', icon: 'fa-fire',   color: '#7c3aed', highText: '高い理想や信念のためなら困難も厭わない', lowText: 'イデオロギーより現実的な実利と柔軟性を優先する' },
+            { id: 'cul', name: '文化・感性',   short: '文化・感性', icon: 'fa-palette', color: '#db2777', highText: '美意識や知的好奇心、内面的な豊かさを追求する', lowText: '抽象的な美よりも実社会での機能や成果を重視する' }
+        ];
+
+        /**
+         * 18 Questions Data
+         * weights: [INN, ACT, EMP, LOG, PAS, CUL]
+         */
+        const QUESTIONS = [
+            {
+                category: '価値観・変革',
+                text: '古くからのルールや前例よりも、まだ誰も試していない新しい方法を試すことに強いワクワクを感じる。',
+                weights: [1.3, 0.4, 0, 0, 0.2, 0.3]
+            },
+            {
+                category: '行動パターン',
+                text: 'チャンスが目の前に現れたら、100%の準備が整っていなくてもまず飛び込んで走りながら考えるタイプだ。',
+                weights: [0.4, 1.4, 0, -0.5, 0.4, 0]
+            },
+            {
+                category: 'リーダーシップ',
+                text: '自分が先頭に立って引っ張るよりも、メンバーそれぞれの長所を引き出し、チーム全体の和を保つことにやりがいを感じる。',
+                weights: [-0.2, -0.3, 1.4, 0.2, 0, 0]
+            },
+            {
+                category: '思考・戦略',
+                text: '大きな目標を達成するためなら、感情を脇に置いてでも冷徹な計算や数年がかりの長期計画を練るのが得意だ。',
+                weights: [0, -0.2, -0.3, 1.4, 0, 0]
+            },
+            {
+                category: '信念・生き方',
+                text: 'たとえ自分が損をしたり少数派になったりしても、「これだけは譲れない」という正義や信念を貫きたい。',
+                weights: [0.2, 0.3, -0.2, -0.3, 1.5, 0]
+            },
+            {
+                category: '感性・探求',
+                text: '実用的な利益や勝負事よりも、美しい芸術・文学・音楽や、未知の学問的真理に触れている時が最も幸せだ。',
+                weights: [0.3, -0.4, 0.1, 0.1, 0, 1.5]
+            },
+            {
+                category: 'リーダーシップ',
+                text: '危機的な状況に陥ったとき、周囲の意見をじっくり聞くよりも、自分の直感と責任で即座に決断を下す方が向いている。',
+                weights: [0.4, 1.3, -0.5, 0.2, 0.3, 0]
+            },
+            {
+                category: '対人関係',
+                text: '過去の対立や立場の違いがあっても、相手の立場に共感し、対話によって妥協点や平和的解決を探るのが得意だ。',
+                weights: [0, -0.2, 1.3, 0.3, -0.1, 0.2]
+            },
+            {
+                category: '思考・戦略',
+                text: '物事を判断するときは、熱意や勢いよりも「客観的なデータ・歴史の教訓・論理的な裏付け」を何より重視する。',
+                weights: [-0.1, -0.4, 0, 1.4, -0.3, 0.2]
+            },
+            {
+                category: '価値観・変革',
+                text: '世の中の「当たり前」や権威に対して疑問を持ちやすく、自分なりの独自のスタイルや世界観を創り出したい。',
+                weights: [1.3, 0.2, -0.3, 0, 0.3, 0.6]
+            },
+            {
+                category: '信念・生き方',
+                text: '自分の身の安全や安定した暮らしよりも、「後世に何を残せるか」「社会にどんな大義を果たせるか」を常に意識している。',
+                weights: [0.3, 0.4, 0.1, 0, 1.4, 0]
+            },
+            {
+                category: '感性・探求',
+                text: '日常の中の小さな季節の移ろいや、言葉の選び方、空間の美しさなど、細部のセンスや風流さに強くこだわる方だ。',
+                weights: [0.1, -0.3, 0.2, 0, 0, 1.4]
+            },
+            {
+                category: '行動パターン',
+                text: '机の上で長く議論するくらいなら、まず現場へ足を運び、自分の目と体で確かめながら行動で示したい。',
+                weights: [0.1, 1.3, 0.1, -0.3, 0.5, -0.2]
+            },
+            {
+                category: '対人関係',
+                text: '人から頼られたり相談されたりすると断れず、困っている人を助けたり後輩を育てたりすることに喜びを感じる。',
+                weights: [-0.2, 0, 1.4, -0.2, 0.4, 0]
+            },
+            {
+                category: '思考・戦略',
+                text: '目先の1勝にこだわるより、じっくりと力を蓄え、最後に確実に勝てるタイミングが来るまで耐え抜くことができる。',
+                weights: [-0.4, -0.6, 0.3, 1.3, 0, 0]
+            },
+            {
+                category: '価値観・変革',
+                text: '異なる文化や全く違う分野の知識を掛け合わせて、これまでにない新しいアイデアやビジネスを生み出すのが好きだ。',
+                weights: [1.3, 0.4, 0.2, 0.3, 0, 0.4]
+            },
+            {
+                category: '信念・生き方',
+                text: '強い逆境や絶望的なピンチに立たされたときほど、かえって心の奥底から闘志や使命感が湧き上がってくる。',
+                weights: [0.2, 0.6, 0, 0, 1.4, 0]
+            },
+            {
+                category: '感性・探求',
+                text: '富や権力を手に入れることよりも、「まだ誰も解明していない謎を解き明かすこと」や「唯一無二の作品を創ること」に惹かれる。',
+                weights: [0.5, -0.3, 0, 0.4, 0.1, 1.4]
+            }
+        ];
+
+        /**
+         * 216 Historical Figures Database (Japanese & World History)
+         * Format: [Name, Region, Era/Category, Emoji, Title/Catchphrase, [INN, ACT, EMP, LOG, PAS, CUL], Description]
+         * Scores are 1 to 10 on each of the 6 axes.
+         */
+        const RAW_FIGURES = [
+            // === 日本史：戦国・安土桃山 (40名) ===
+            ["織田信長", "日本史", "戦国・安土桃山", "🔥", "常識を焼き尽くす天下の革新者", [10,10,3,8,9,7], "楽市楽座や鉄砲戦術など、旧来の権威や常識を打破し新時代を強引に切り拓いた革命児。圧倒的なスピード感と合理性を併せ持ちます。"],
+            ["豊臣秀吉", "日本史", "戦国・安土桃山", "☀️", "人心を掴み天下へ駆け上がった太陽", [9,10,9,8,8,7], "足軽から天下人へと登り詰めた稀有な立身出世の達人。抜群の愛嬌と発想力で敵をも味方に変える人間的魅力の持ち主です。"],
+            ["徳川家康", "日本史", "戦国・安土桃山", "🐢", "忍耐と大局観で260年の泰平を築いた覇者", [5,6,8,10,7,6], "鳴かぬなら鳴くまで待とうの精神で、どれほどの逆境も耐え抜き最後に勝利を収めた長期戦略と組織構築の大家です。"],
+            ["武田信玄", "日本史", "戦国・安土桃山", "⛰️", "風林火山の旗の下に人を束ねる名将", [6,8,8,10,8,6], "「人は城、人は石垣」と語り、卓越した軍略と人材マネジメントで最強の騎馬軍団を率いた甲斐の虎です。"],
+            ["上杉謙信", "日本史", "戦国・安土桃山", "🐉", "私欲を捨て義のために戦う越後の龍", [5,10,6,7,10,6], "敵に塩を送る逸話に象徴されるように、領土拡大の野心よりも「義」と信仰を重んじ、戦場では無敗に近い強さを誇りました。"],
+            ["伊達政宗", "日本史", "戦国・安土桃山", "🌙", "時代に挑む粋で野心あふれる独眼竜", [8,9,6,8,8,9], "あともう20年早く生まれていれば天下を狙えたと評された奥州の覇者。料理や衣装にもこだわる一流の文化人でもあります。"],
+            ["真田幸村(信繁)", "日本史", "戦国・安土桃山", "🦌", "絶望の淵で最も輝く日本一の兵", [7,10,7,8,10,5], "大坂の陣で圧倒的劣勢のなか真田丸を築き、徳川本陣へ肉薄した不屈の武将。忠義と大義に殉じる熱い魂の持ち主です。"],
+            ["毛利元就", "日本史", "戦国・安土桃山", "🏹", "三本の矢の結束と謀略で中国地方を制す", [6,6,8,10,6,5], "小領主から知略と外交、そして一族の結束力を武器に中国地方一帯の覇者へと成長した戦国屈指の策謀家です。"],
+            ["黒田官兵衛", "日本史", "戦国・安土桃山", "🧠", "天下人すら畏れた冷徹なる天才軍師", [8,7,6,10,6,7], "秀吉の天下統一を支えた稀代の軍師。先を読む眼力があまりに鋭く、幽閉されても決して心が折れない強靭な精神力を持ちました。"],
+            ["竹中半兵衛", "日本史", "戦国・安土桃山", "🪶", "無欲にして知略極まる美濃の麒麟児", [7,5,8,10,7,8], "わずか十数人で稲葉山城を乗っ取った天才軍師。名声や出世に執着せず、静かに最善の策を授ける孤高の参謀タイプです。"],
+            ["明智光秀", "日本史", "戦国・安土桃山", "桔", "教養と秩序を重んじた苦悩の知将", [5,7,7,9,8,8], "古典や茶道に通じ、領民思いの善政を敷いた教養人。理想とする秩序と現実の狭間で大きな決断を下した繊細かつ実直な人物です。"],
+            ["石田三成", "日本史", "戦国・安土桃山", "⚖️", "不器用なまでに筋と忠義を通す実務官僚", [6,7,4,9,10,5], "抜群の行政・兵站能力を持ち、豊臣家への忠義のために天下分け目の関ヶ原を戦った、正義感と原則に忠実な人物です。"],
+            ["直江兼続", "日本史", "戦国・安土桃山", "❤️", "「愛」の前立てに義と知性を宿す名宰相", [6,7,8,9,9,8], "上杉家の執政として内政・外交に手腕を振るい、学問や文化も深く愛した文武両道のリーダーです。"],
+            ["本多忠勝", "日本史", "戦国・安土桃山", "蜻", "生涯57回の合戦で傷一つ負わぬ最強の武人", [4,10,6,6,9,4], "家康の懐刀として常に最前線で戦い抜き、「家康に過ぎたるもの」と敵味方から称賛された生粋の現場スペシャリストです。"],
+            ["前田利家", "日本史", "戦国・安土桃山", "🌸", "義理人情に厚く誰からも頼られた加賀百万石の祖", [5,8,9,6,8,6], "若き日の傾奇者から、信長・秀吉の信頼を一身に集める重鎮へと成長。誠実さと面倒見の良さで多くの武将に慕われました。"],
+            ["前田慶次", "日本史", "戦国・安土桃山", "🐎", "権威を笑い自由と風流に生きる天下の傾奇者", [9,9,6,5,8,10], "誰にも縛られず、己の美学とユーモア、そして圧倒的な武勇と古典の教養を武器に乱世を自由に駆け抜けた風流人です。"],
+            ["島津義弘", "日本史", "戦国・安土桃山", "🐗", "敵中突破を敢行した鬼石曼子の猛将", [5,10,8,7,10,5], "関ヶ原での「島津の退き口」に代表される、どんな窮地でも部下と一丸になって活路を開く不屈の現場指揮官です。"],
+            ["長宗我部元親", "日本史", "戦国・安土桃山", "🌊", "姫若子から四国統一へ覚醒した土佐の覇者", [6,9,7,7,8,5], "おとなしい少年時代から一転、初陣で覚醒し四国全土を席巻した、秘めたる情熱と爆発力を持つリーダーです。"],
+            ["北条早雲", "日本史", "戦国・安土桃山", "🌅", "善政と知略で戦国の幕を開けた下剋上の先駆者", [9,9,8,9,7,5], "素浪人から伊豆・相模を切り取り戦国大名の礎を築きつつ、領民への減税など民心掌握にも長けた実力者です。"],
+            ["斎藤道三", "日本史", "戦国・安土桃山", "🐍", "油売りから一国を盗り信長を見抜いた美濃の蝮", [9,8,3,10,6,6], "徹底した実力主義と合理的な思考で下剋上を成し遂げ、うつけと呼ばれた若き信長の才覚を誰よりも早く見抜きました。"],
+            ["今川義元", "日本史", "戦国・安土桃山", "🏹", "海道一の弓取りと称された文武両道の名君", [6,6,7,8,6,9], "京都の公家文化を愛しつつ、分国法を整備し東海道最強の領国経営を行った洗練された統治者です。"],
+            ["大友宗麟", "日本史", "戦国・安土桃山", "✝️", "南蛮文化と理想郷を追い求めた九州のキリシタン大名", [9,7,6,6,8,9], "西洋の音楽や医学、大砲をいち早く取り入れ、国境を超えた新しい世界観に魅了された進取の気性に富む大名です。"],
+            ["立花宗茂", "日本史", "戦国・安土桃山", "⚡", "秀吉が「西国無双」と絶賛した仁義と武勇の将", [6,9,9,7,9,6], "一度は大名を改易され浪人となりながらも、その人徳と実力で再び元の領地へ復帰した戦国唯一の奇跡の武将です。"],
+            ["藤堂高虎", "日本史", "戦国・安土桃山", "🏯", "七度主君を変え時代を生き抜いた築城と実務の天才", [8,8,6,10,4,7], "古い価値観に縛られず自分の能力を最も評価する環境を選び抜き、日本屈指の築城技術で名を馳せたプロフェッショナルです。"],
+            ["真田昌幸", "日本史", "戦国・安土桃山", "🎲", "徳川の大軍を二度退けた表裏比興の策士", [8,7,5,10,7,5], "大国に囲まれながらも巧妙な外交と奇策で大軍を翻弄し、小勢力でも知恵一つで自立を守り抜いた知略の塊です。"],
+            ["大谷吉継", "日本史", "戦国・安土桃山", "🤝", "友との信義のために勝敗を超えて戦った智将", [6,7,9,9,10,6], "病を抱えながらも明晰な頭脳で秀吉に重用され、最後は盟友・石田三成との友情のために不利を承知で立ち上がりました。"],
+            ["細川ガラシャ", "日本史", "戦国・安土桃山", "✝️", "過酷な運命のなかで気高き信仰と誇りを貫いた女性", [6,6,7,7,10,9], "逆臣の娘という苦境にありながら、自らの意志で洗礼を受け、最期まで凛とした気品と信念を失わなかった女性です。"],
+            ["お市の方", "日本史", "戦国・安土桃山", "🌺", "戦国の荒波の中で誇りと慈愛を守り抜いた戦国の華", [5,5,9,6,9,8], "信長の妹として政略の渦中にありながら、夫や娘たちへの深い愛情と織田家の誇りを胸に気高く生き抜きました。"],
+            ["濃姫(帰蝶)", "日本史", "戦国・安土桃山", "🦋", "蝮の娘として魔王・信長の背中を支えた凛々しき妻", [7,7,6,8,8,7], "斎藤道三の娘として織田家に嫁ぎ、常識破りの信長と対等に渡り合う胆力と聡明さを持った女性として描かれます。"],
+            ["ねね(北政所)", "日本史", "戦国・安土桃山", "🏮", "天下人の妻として武将たちを母のように包んだ女性", [6,6,10,8,7,7], "秀吉の糟糠の妻であり、加藤清正や福島正則ら多くの若手武将を育てまとめ上げた包容力と政治感覚の持ち主です。"],
+            ["淀殿(茶々)", "日本史", "戦国・安土桃山", "👑", "豊臣の誇りと我が子を守るため天下に抗った女傑", [5,8,5,5,10,7], "織田の血を引き、豊臣家の存続と愛する我が子のために徳川家康という巨人と最期まで真っ向から対峙しました。"],
+            ["井伊直虎", "日本史", "戦国・安土桃山", "🐯", "絶滅の危機にあったお家を女城主として守り抜いた希望", [7,7,9,8,9,6], "男たちが次々と倒れるなか、知恵と粘り強さで井伊家の命脈と領民の暮らしを次世代へと繋いだ芯の強いリーダーです。"],
+            ["立花誾千代", "日本史", "戦国・安土桃山", "🗡️", "わずか7歳で城督を継ぎ鉄砲隊を率いた姫武将", [6,9,6,7,9,5], "女でありながら一切の妥協を許さず、武装した侍女たちを率いて城を守り抜いた凛々しく気丈な戦国の姫です。"],
+            ["千利休", "日本史", "戦国・安土桃山", "🍵", "茶碗ひとつで天下人と対峙した「わび茶」の完成者", [10,6,5,7,9,10], "華美な装飾を削ぎ落とした究極の美「わび・さび」を確立し、権力者・秀吉に対しても己の美意識を一切曲げなかった芸術の巨人です。"],
+            ["狩野永徳", "日本史", "戦国・安土桃山", "🦁", "安土城や聚楽第を彩った豪壮華麗なる画壇の覇者", [9,8,5,6,8,10], "信長や秀吉の天下統一の気宇をそのまま巨大な金碧障壁画へと昇華させた、エネルギッシュな天才絵師です。"],
+            ["古田織部", "日本史", "戦国・安土桃山", "🏺", "歪みや破調に新しい美を見出したアバンギャルド茶人", [10,6,6,6,7,10], "師・利休の静寂な茶から一歩踏み出し、あえて歪ませた茶碗や斬新なデザインで一世を風靡したクリエイターです。"],
+            ["服部半蔵", "日本史", "戦国・安土桃山", "🥷", "影から主君を守り抜いた伊賀忍軍と槍の達人", [6,9,7,9,8,4], "「鬼の半蔵」の異名をとる武勇と、伊賀衆を束ねて家康の危機『神君伊賀越え』を救ったプロフェッショナルな実行者です。"],
+            ["雑賀孫一", "日本史", "戦国・安土桃山", "🔫", "権力に屈せず鉄砲と自由を愛した傭兵集団の頭領", [8,9,7,7,8,5], "最新兵器である鉄砲を駆使する雑賀衆を率い、織田信長の大軍をも苦しめた自立心旺盛なリーダーです。"],
+            ["ルイス・フロイス", "日本史", "戦国・安土桃山", "✒️", "異国の視点から戦国日本のリアルを記録した宣教師", [7,7,8,9,8,9], "信長や秀吉と親しく対話し、当時の日本人とヨーロッパ人の文化の違いを鋭い観察眼で『日本史』に書き残しました。"],
+            ["弥助", "日本史", "戦国・安土桃山", "🛡️", "海を越え信長に武士として見出されたアフリカの戦士", [7,9,7,6,8,5], "遠い異国の地で言葉や文化の壁を越え、信長の側近として本能寺の変まで忠実に戦い抜いた誇り高き武人です。"],
+
+            // === 日本史：幕末・明治 (32名) ===
+            ["坂本龍馬", "日本史", "幕末・明治", "🌊", "藩の枠を超え新しい日本の夜明けを描いた風雲児", [10,9,10,7,9,6], "薩長同盟や海援隊の設立など、敵味方の垣根を越えて人と人を繋ぎ、自由な発想で新時代のグランドデザインを描きました。"],
+            ["西郷隆盛", "日本史", "幕末・明治", "🐕", "「敬天愛人」の心で全てを包み込んだ維新の巨星", [6,8,10,5,10,5], "私利私欲を一切持たず、その圧倒的な人間的器量と情の深さで多くの志士から慕われた、情熱と包容力の象徴です。"],
+            ["大久保利通", "日本史", "幕末・明治", "🏛️", "冷徹なリアリズムで近代国家の礎を築いた鉄の政治家", [8,9,4,10,9,4], "盟友と袂を分かってでも日本の近代化・殖産興業を最優先で推し進めた、強い責任感と実行力を持つ国家建設者です。"],
+            ["木戸孝允(桂小五郎)", "日本史", "幕末・明治", "🏃", "幾多の危機を潜り抜け合意形成に奔走した維新の調整役", [7,7,9,8,8,6], "幕末の動乱を粘り強く生き延び、明治政府では五箇条の御誓文や版籍奉還など制度設計とバランス調整に尽力しました。"],
+            ["吉田松陰", "日本史", "幕末・明治", "🕯️", "松下村塾から時代を動かす若き魂に火をつけた教育者", [8,9,8,6,10,7], "「至誠にして動かざる者は未だこれ有らざるなり」と説き、身分を問わず塾生の個性を伸ばして維新の原動力となりました。"],
+            ["高杉晋作", "日本史", "幕末・明治", "⚡", "「おもしろきこともなき世をおもしろく」駆けた奇兵隊の創設者", [10,10,5,7,9,8], "身分を問わない奇兵隊を創設し、絶体絶命の長州藩をわずか数十人の挙兵からひっくり返した幕末屈指のゲームチェンジャーです。"],
+            ["勝海舟", "日本史", "幕末・明治", "🚢", "江戸百万の民を救うため無血開城を成し遂げた大局観の人", [8,8,8,10,7,6], "幕臣でありながら幕府の枠にとらわれず世界を見据え、絶妙な交渉力と度胸で日本を内戦の焦土から救いました。"],
+            ["土方歳三", "日本史", "幕末・明治", "⚔️", "鬼の副長として最期まで武士の美学を貫いた新選組の柱", [6,10,5,8,10,6], "厳しい局中法度で新選組を統率し、時代が明治へと移り変わっても函館の地まで己の誠と友情を貫き通しました。"],
+            ["近藤勇", "日本史", "幕末・明治", "誠", "多摩の道場主から幕末の京都を揺るがす誠の局長へ", [5,8,8,5,9,5], "武士よりも武士らしい生き方を追い求め、個性豊かな新選組の隊士たちの精神的支柱として先頭に立ち続けました。"],
+            ["沖田総司", "日本史", "幕末・明治", "🌸", "無邪気な笑顔と天才的な剣技を併せ持つ新選組一番隊組長", [6,9,7,6,8,7], "子どもたちと遊ぶ純粋な優しさと、ひとたび剣を抜けば誰も寄せ付けない圧倒的なスピードと集中力を持った天才剣士です。"],
+            ["斉藤一", "日本史", "幕末・明治", "🐺", "寡黙にして不敗、激動の時代を生き抜いた孤高の剣客", [5,9,5,8,9,5], "新選組の中核として戦い抜き、明治維新後も警視庁の警察官や教育者として静かに信念を貫き通した実直な武人です。"],
+            ["徳川慶喜", "日本史", "幕末・明治", "📷", "大政奉還を決断し多趣味に生きた最後の将軍", [8,5,6,9,4,9], "抜群の頭脳で幕末の難局に対処し、大政奉還によって徳川家の命脈を保った後は、写真や自転車など趣味の世界を謳歌しました。"],
+            ["福沢諭吉", "日本史", "幕末・明治", "📖", "「独立自尊」と学問の力で日本の意識改革を導いた啓蒙家", [10,8,6,10,8,9], "『学問のすゝめ』を著し慶應義塾を創設。剣や権力ではなく、個人の自立した知性と実学こそが国を豊かにすると説きました。"],
+            ["渋沢栄一", "日本史", "幕末・明治", "🧮", "論語と算盤を両立させ500以上の企業を育てた近代経済の父", [9,9,9,9,8,6], "道徳と経済活動は一致すべきだという信念のもと、独占を嫌い多くの人々と協力して近代日本の産業基盤を創り上げました。"],
+            ["伊藤博文", "日本史", "幕末・明治", "📜", "大日本帝国憲法を起草し初代内閣総理大臣となった調整の達人", [8,8,9,9,7,6], "イギリスの議会政治に学び、多様な勢力の意見を調整しながら近代日本の立憲政治の仕組みを築き上げました。"],
+            ["大隈重信", "日本史", "幕末・明治", "🎓", "在野の精神で政党政治と早稲田大学を創った楽天の政治家", [8,8,9,7,8,8], "どんな困難にもめげない明るさと雄弁さで、政府の外からも言論と教育を通じて日本の民主化に貢献しました。"],
+            ["板垣退助", "日本史", "幕末・明治", "🗣️", "自由民権運動の先頭に立ち国民の政治参加を訴えた闘士", [8,9,7,6,10,5], "戊辰戦争の名指揮官から言論による政治改革へと転身し、国会開設を目指して全国を駆け巡った情熱の政治家です。"],
+            ["岩崎弥太郎", "日本史", "幕末・明治", "🚢", "ゼロから海運帝国・三菱を築き上げた豪腕の起業家", [9,10,5,9,8,5], "幕末の混乱期に商機を見出し、外国の巨大海運会社との激しい競争に打ち勝って日本の海運と産業を守り抜きました。"],
+            ["津田梅子", "日本史", "幕末・明治", "🌱", "わずか6歳で海を渡り日本の女子高等教育を切り拓いた先駆者", [9,8,8,8,9,8], "11年間のアメリカ留学を経て、女性が自立して生きるための質の高い教育環境（津田塾大学）を創設しました。"],
+            ["新島襄", "日本史", "幕末・明治", "⛪", "脱国して西洋で学び「良心」を育む同志社を創った教育者", [9,8,9,7,10,8], "知識だけでなく「一国の良心」ともいうべき自立した人間を育てることに生涯を捧げた情熱の教育者です。"],
+            ["夏目漱石", "日本史", "幕末・明治", "🐈", "近代人の孤独と自我をユーモアと鋭い心理描写で描いた文豪", [8,4,6,8,7,10], "西洋化の波に揺れる日本人の内面を深く洞察し、今なお色褪せない数々の名作小説を世に送り出しました。"],
+            ["森鴎外", "日本史", "幕末・明治", "🩺", "軍医総監の頂点を極めながら近代文学を牽引した知の巨人", [7,7,6,10,7,10], "医学・行政のトップとしての冷静な論理性と、格調高い文学・翻訳を生み出す豊かな芸術性を完璧に両立させました。"],
+            ["樋口一葉", "日本史", "幕末・明治", "🖋️", "24年の短い生涯で庶民の哀歓を珠玉の言葉に昇華した天才作家", [7,6,8,7,9,10], "貧困のなかで家族を支えながら執筆を続け、わずか1年余りの奇跡の期間に『たけくらべ』『にごりえ』などの傑作を残しました。"],
+            ["正岡子規", "日本史", "幕末・明治", "🍊", "病床にありながら俳句と短歌を革新し野球も愛した表現者", [9,7,8,7,9,10], "伝統的な俳句・短歌に「写生」の概念を持ち込んで近代化し、どんな苦境でも旺盛な好奇心とユーモアを失いませんでした。"],
+            ["野口英世", "日本史", "幕末・明治", "🔬", "左手のハンディと貧困を乗り越え世界の医学に挑んだ情熱の研究者", [8,10,6,8,10,6], "「志を得ざれば再び此地を踏まず」の決意で世界に飛び出し、黄熱病などの感染症研究に命を懸けた努力の天才です。"],
+            ["北里柴三郎", "日本史", "幕末・明治", "🧫", "破傷風菌の純粋培養に成功し予防医学の礎を築いた実学の父", [9,9,7,10,9,6], "世界的な細菌学者でありながら、研究を社会へ還元するために研究所や病院、大学医学部の設立に奔走した行動派の科学者です。"],
+            ["東郷平八郎", "日本史", "幕末・明治", "⚓", "寡黙にして沈着冷静、世界の海戦史を塗り替えた連合艦隊司令長官", [6,8,7,10,9,4], "普段は穏やかで口数が少ないながら、決戦の瞬間には大胆な丁字戦法（東郷ターン）を断行する強靭な胆力の持ち主です。"],
+            ["秋山真之", "日本史", "幕末・明治", "🌊", "「本日天気晴朗なれども波高し」の名文と知略で勝利を導いた参謀", [8,7,6,10,8,8], "古今東西の兵法と徹底した情報分析でバルチック艦隊撃滅の作戦を立案し、文学的センスにも溢れた天才作戦参謀です。"],
+            ["ジョン万次郎", "日本史", "幕末・明治", "🐋", "漂流の危機をチャンスに変え日米の架け橋となった国際人", [8,8,9,7,7,7], "無人島への漂流からアメリカで教育を受け帰国。偏見のない柔軟な心で西洋の知識と英語を幕末の日本に伝えました。"],
+            ["天璋院篤姫", "日本史", "幕末・明治", "🌺", "徳川家の誇りと大奥の女性たちを守り抜いた聡明なる御台所", [6,7,10,8,9,8], "薩摩から将軍家へ嫁ぎ、幕府瓦解の危機において実家の薩摩藩に対しても毅然と徳川家の助命と江戸の平和を訴えました。"],
+            ["新渡戸稲造", "日本史", "幕末・明治", "🎋", "英語で『武士道』を著し太平洋の架け橋たらんと願った国際派知識人", [7,6,10,8,8,9], "日本人の精神性を世界にわかりやすく紹介し、国際連盟事務局次長として対話と教育による平和を追求しました。"],
+            ["与謝野晶子", "日本史", "幕末・明治", "🌹", "情熱的な恋と平和への願いを歌い上げた近代の歌人・思想家", [9,8,8,6,10,10], "『みだれ髪』で因習にとらわれない人間と恋愛の肯定を高らかに歌い、女性の自立と教育にも力を尽くしました。"],
+
+            // === 日本史：古代・飛鳥・奈良・平安 (20名) ===
+            ["聖徳太子(厩戸皇子)", "日本史", "古代・平安", "☀️", "「和を以て貴しとなす」の精神で国家の礎を築いた古代の叡智", [9,7,10,9,8,9], "十七条憲法や冠位十二階を定め、遣隋使の派遣や仏教興隆を通じて、多様な豪族を対話と法でまとめた理想のリーダーです。"],
+            ["中大兄皇子(天智天皇)", "日本史", "古代・平安", "🏛️", "大化の改新を断行し中央集権国家への大転換を成し遂げた改革者", [9,9,5,9,8,6], "蘇我氏を打倒してクーデターを成功させ、国内外の危機に対応するため急速な律令国家体制の構築を推進しました。"],
+            ["中臣鎌足(藤原鎌足)", "日本史", "古代・平安", "🧠", "表舞台に立たずして歴史の転換点を設計した稀代の黒幕・参謀", [8,7,7,10,7,7], "蹴鞠の会での出会いから中大兄皇子を支え、緻密な根回しと戦略で千年続く藤原氏の繁栄の礎を築きました。"],
+            ["持統天皇", "日本史", "古代・平安", "👑", "夫の遺志を継ぎ藤原京遷都と『日本書紀』編纂を進めた女帝", [8,8,7,9,9,8], "壬申の乱を夫・天武天皇とともに戦い抜き、即位後は法治国家としての仕組みと歌文化（万葉集）を見事に開花させました。"],
+            ["聖武天皇", "日本史", "古代・平安", "🪷", "災害と疫病の世を仏教の慈悲と東大寺大仏で救おうとした帝", [7,6,9,6,9,9], "社会不安が渦巻く時代において、武力ではなく文化と祈りの力によって国民全体の心をひとつに繋ごうと尽力しました。"],
+            ["鑑真", "日本史", "古代・平安", "🚢", "五度の渡海失敗と失明を乗り越え日本へ戒律と医薬を伝えた高僧", [6,8,9,7,10,9], "12年もの歳月と失明という試練にも決して諦めず、海を越えて仏教の正式な戒律と唐の先進文化を日本にもたらしました。"],
+            ["空海(弘法大師)", "日本史", "古代・平安", "🏔️", "密教・書道・土木・教育のすべてで超人的な足跡を残したマルチ天才", [10,9,9,9,9,10], "わずか2年で唐から真言密教の奥義を持ち帰り、庶民のための学校「綜芸種智院」や満濃池の改修まで手掛けた万能の巨人です。"],
+            ["最澄(伝教大師)", "日本史", "古代・平安", "🌲", "比叡山に籠もり「一隅を照らす」人材育成に生涯を捧げた求道者", [8,7,8,8,10,9], "自らの立場でベストを尽くす人こそが国の宝（国宝）であると説き、のちの鎌倉仏教の祖師たちを生む母山を築きました。"],
+            ["菅原道真", "日本史", "古代・平安", "🌸", "類まれな学才と誠実さで宇多天皇を支えた「学問の神様」", [6,5,7,10,8,10], "学者出身の家柄から異例の出世を遂げ、遣唐使の廃止を進言するなど現実的な外交眼と最高峰の漢詩の才能を持っていました。"],
+            ["紫式部", "日本史", "古代・平安", "📜", "世界最古の長編小説『源氏物語』で人間の心の深淵を描いた文豪", [9,4,7,9,7,10], "宮廷社会の華やかさの裏にある人間の孤独や愛憎を、驚くほど緻密な構成力と心理描写で永遠の文学へと昇華させました。"],
+            ["清少納言", "日本史", "古代・平安", "✨", "『枕草子』で日常の「をかし」を鮮やかに切り取ったエッセイの祖", [9,7,7,8,7,10], "シャープな観察眼と機知に富んだユーモアで宮廷サロンを魅了し、自分の「好き」を肯定的に表現する新しい感性を開きました。"],
+            ["安倍晴明", "日本史", "古代・平安", "☯️", "星を読み人の心の不安を解き明かした平安京のカリスマ陰陽師", [8,5,7,10,6,9], "天文学・暦学の高度な専門知識と優れた洞察力を駆使し、藤原道長をはじめとする貴族たちの精神的支柱となりました。"],
+            ["藤原道長", "日本史", "古代・平安", "🌕", "「この世をば我が世とぞ思ふ」無血の政治手腕で頂点を極めた摂関", [6,7,8,10,6,9], "武力ではなく巧みな婚姻政策と人事・人脈ネットワークを駆使して最高権力を握り、華麗な国風文化のパトロンともなりました。"],
+            ["平将門", "日本史", "古代・平安", "🐎", "虐げられた坂東の民を庇護し朝廷に挑んだ東国の風雲児", [8,10,8,5,10,4], "頼ってきた弱者を決して見捨てない義侠心から乱の渦中へと身を投じ、今も東京の守り神として敬愛される熱血の武人です。"],
+            ["平清盛", "日本史", "古代・平安", "⛩️", "日宋貿易と福原京で武家政権の先駆けとなったスケールの大きな革命家", [10,9,7,8,8,8], "貴族社会の常識を破って初の武家政権を樹立し、大輪田泊を整備して海外貿易による海洋国家ビジョンを描いた先駆者です。"],
+            ["源義経", "日本史", "古代・平安", "🦊", "一の谷・壇ノ浦で常識破りの奇襲を成功させた不世出の戦術天才", [10,10,7,7,9,7], "既存の合戦の作法を無視した機動戦と奇襲で平家を滅ぼした戦の天才。純粋すぎるがゆえに政治の壁に散った悲劇の英雄です。"],
+            ["武蔵坊弁慶", "日本史", "古代・平安", "薙", "仁王立ちのまま主君を守り抜いた忠義と怪力の象徴", [5,9,9,7,10,5], "勧進帳の機転にみられる知恵と圧倒的な怪力を併せ持ち、最期の瞬間まで主君・義経の盾となり続けた無二の相棒です。"],
+            ["巴御前", "日本史", "古代・平安", "🏹", "「一騎当千の兵者」と謳われ木曽義仲と共に駆け抜けた女武者", [6,10,7,6,9,6], "荒々しい源平合戦の最前線で名だたる強者たちを打ち破り、最期まで愛する人と共に戦場を駆けた勇猛果敢な女性です。"],
+            ["西行", "日本史", "古代・平安", "🌸", "武士の地位を捨て桜と月を愛し全国を旅した漂泊の歌人", [7,6,6,5,8,10], "「願はくは花の下にて春死なむ」と詠み、世俗の権力や名誉から離れて自然と和歌の美しさに人生を捧げた自由人です。"],
+            ["卑弥呼", "日本史", "古代・平安", "🪞", "争乱の邪馬台国を神秘のカリスマと外交で束ねた古代の女王", [7,5,9,8,8,9], "長きにわたる戦乱を収めるため共立され、魏への朝貢外交で国際的な地位を確立しつつ人々の心を一つにまとめました。"],
+
+            // === 日本史：鎌倉・室町・江戸・近代 (22名) ===
+            ["源頼朝", "日本史", "鎌倉・室町・江戸", "🏛️", "流人の身から700年続く武家社会のシステムを創設した政治の覇者", [9,8,6,10,8,5], "カリスマ性だけでなく、御恩と奉公という明確な契約システムと法秩序を整えることで、盤石な鎌倉幕府を築き上げました。"],
+            ["北条政子", "日本史", "鎌倉・室町・江戸", "📿", "承久の乱で御家人たちの心を震わせ幕府を救った「尼将軍」", [6,8,9,9,10,6], "頼朝の死後、動揺する武士たちに向けて「故大将の恩は山よりも高く海よりも深い」と演説し、組織を一つに束ねた女傑です。"],
+            ["北条泰時", "日本史", "鎌倉・室町・江戸", "⚖️", "御成敗式目を制定し合議制と道理による政治を実現した名執権", [8,7,9,10,8,6], "独裁を排して評定衆による合議制を導入し、武士社会の最初の基本法典を作ることで公平で安定した統治を確立しました。"],
+            ["日蓮", "日本史", "鎌倉・室町・江戸", "☀️", "いかなる弾圧にも屈せず民衆の救済と立正安国を叫んだ情熱の僧", [8,9,7,7,10,6], "度重なる流罪や襲撃にも決して信念を曲げず、災害や戦乱に苦しむ人々に強い希望と生きる力を与え続けました。"],
+            ["親鸞", "日本史", "鎌倉・室町・江戸", "🙏", "「非僧非俗」を掲げ弱き人間のありのままの苦悩に寄り添った思想家", [8,4,10,7,9,8], "厳しい修行ができない市井の人々や悪人と呼ばれる存在にこそ救いがあると説き、人間への深い共感を示しました。"],
+            ["楠木正成", "日本史", "鎌倉・室町・江戸", "菊", "わずかな兵と奇想天外な知略で幕府の大軍を翻弄した忠義の名将", [9,8,8,10,10,6], "千早城の戦いなどで常識外れのゲリラ戦術を展開し、勝ち目のない戦であっても大義と信義のために最期まで尽くしました。"],
+            ["足利尊氏", "日本史", "鎌倉・室町・江戸", "🌊", "清濁併せ呑む器量と不思議な魅力で武将たちを惹きつけた室町幕府の祖", [6,7,10,5,7,8], "気前が良く物事にこだわらない天性の大らかさで、一度敵対した者すら懐深く受け入れ、結果として天下の頂点に立ちました。"],
+            ["一休宗純", "日本史", "鎌倉・室町・江戸", "🧹", "権威や建前をとんちと風狂で笑い飛ばした反骨の禅僧", [9,7,7,8,8,10], "形式化した仏教界の偽善を鋭く批判し、ユーモアと人間味あふれる生き方で庶民から芸術家にまで深い影響を与えました。"],
+            ["世阿弥", "日本史", "鎌倉・室町・江戸", "🎭", "「初心忘るべからず」「秘すれば花」で能楽を芸術の極致へ高めた大成者", [9,6,7,9,8,10], "実践的な舞台芸術を『風姿花伝』という普遍的な芸術論・リーダーシップ論へと体系化した日本文化史上の巨人です。"],
+            ["雪舟", "日本史", "鎌倉・室町・江戸", "🖌️", "明へ渡り日本の風景に根ざした独自の水墨画を完成させた画聖", [9,7,5,7,9,10], "本場の中国でも「学ぶべき師なし、日本の自然こそが師」と悟り、力強い構図と筆致で水墨画の最高峰を極めました。"],
+            ["徳川吉宗", "日本史", "鎌倉・室町・江戸", "🐎", "目安箱や新田開発で幕政を立て直した実学重視の「暴れん坊」名君", [8,9,8,9,8,5], "紀州藩から将軍を継ぎ、庶民の声を直接聞く目安箱の設置や町火消の創設、洋書の輸入緩和など現場目線の改革を断行しました。"],
+            ["上杉鷹山", "日本史", "鎌倉・室町・江戸", "🌱", "「なせば成る」の精神で破産寸前の米沢藩を再生させた理想のリーダー", [9,8,10,9,10,7], "自ら質素倹約の手本を示しつつ、産業育成と教育改革で藩財政を奇跡的に立て直し、J.F.ケネディも尊敬した政治家とされます。"],
+            ["二宮尊徳(金次郎)", "日本史", "鎌倉・室町・江戸", "🌾", "「積小為大」と報徳仕法で600以上の荒廃した農村を復興した実践家", [8,9,9,9,9,5], "薪を背負いながら読書した少年時代から、勤勉と合理的な財政再建メソッドを組み合わせ、多くの村を貧困から救いました。"],
+            ["伊能忠敬", "日本史", "鎌倉・室町・江戸", "🗺️", "50歳から天文学を学び地球一周分の距離を歩いて日本地図を作った挑戦者", [8,9,7,10,10,6], "隠居後の第二の人生で17年かけて全国を測量。何歳からでも夢と探究心を持って挑戦できることを証明した偉人です。"],
+            ["平賀源内", "日本史", "鎌倉・室町・江戸", "⚡", "エレキテルからキャッチコピーまで江戸を沸かせたマルチクリエイター", [10,8,6,8,7,10], "本草学者、発明家、戯作者、画家、鉱山開発者として八面六臂の活躍を見せ、「土用の丑の日」のコピーも考案した奇才です。"],
+            ["杉田玄白", "日本史", "鎌倉・室町・江戸", "📘", "辞書もない状態から『解体新書』を翻訳し近代医学の扉を開いた開拓者", [9,8,8,9,9,7], "「艫櫂なき船で大海に乗り出す」ような困難なオランダ語医学書の翻訳を、仲間と共に約4年かけて成し遂げました。"],
+            ["松尾芭蕉", "日本史", "鎌倉・室町・江戸", "🐸", "旅に生き旅に死す、俳諧を崇高な芸術へと高めた『奥の細道』の俳聖", [9,7,7,6,8,10], "日常の俗語であった俳諧に「さび・しおり・軽み」という深い精神性を吹き込み、自然と共に生きる日本人の美意識を確立しました。"],
+            ["葛飾北斎", "日本史", "鎌倉・室町・江戸", "🌊", "90歳まで「もっと上手くなりたい」と描き続けた世界の画狂老人", [10,8,4,7,10,10], "『富嶽三十六景』でゴッホやモネら西洋の印象派にも衝撃を与え、生涯に3万点以上の作品を残した尽きぬ創作意欲の塊です。"],
+            ["近松門左衛門", "日本史", "鎌倉・室町・江戸", "🎭", "義理と人情の板挟みに揺れる庶民の愛を描いた「東洋のシェイクスピア」", [8,6,9,7,8,10], "武士だけでなく町人や女性たちの純粋な愛を人形浄瑠璃・歌舞伎の脚本として描き、江戸の庶民の涙と共感を呼びました。"],
+            ["大石内蔵助", "日本史", "鎌倉・室町・江戸", "🥁", "昼行灯を演じて敵を欺き一糸乱れぬ統率で本懐を遂げた赤穂浪士の頭領", [6,8,9,10,10,6], "1年9ヶ月にわたり遊び人を装って周囲の警戒を解きつつ、個性豊かな47士の心と規律を束ね上げた組織マネジメントの達人です。"],
+            ["大岡忠相(越前)", "日本史", "鎌倉・室町・江戸", "⚖️", "厳格な法と温かい人情を調和させた江戸の名奉行・行政官", [7,7,10,9,8,6], "「大岡裁き」として知られる機知と慈悲に富んだ裁判だけでなく、江戸の防火体制や物価対策にも卓越した手腕を発揮しました。"],
+            ["宮本武蔵", "日本史", "鎌倉・室町・江戸", "⚔️", "60余度の勝負に無敗、二刀流と『五輪書』を極めた孤高の求道者", [9,10,3,9,10,9], "固定観念にとらわれない実戦的な二刀流を編み出し、晩年は水墨画や彫刻にも傑作を残したストイックな自己鍛錬の極致です。"],
+            ["北条時宗", "日本史", "鎌倉・室町・江戸", "🛡️", "二度の元寇という未曽有の国難を10代で退けた若き執権", [6,9,7,8,10,6], "世界最強のモンゴル帝国からの降伏勧告に対し、禅の精神で恐れを断ち切り、全国の御家人を統率して日本を守り抜きました。"],
+            ["足利義満", "日本史", "鎌倉・室町・江戸", "🏯", "南北朝を統一し金閣寺と日明貿易で室町の絶頂を築いた将軍", [9,8,7,9,7,10], "武家と公家の両方の頂点に立ち、世阿弥の能楽を保護するなど政治権力と華麗な北山文化を融合させたスケール抜群の覇者です。"],
+            ["足利義政", "日本史", "鎌倉・室町・江戸", "🍵", "政治の混乱のなかで「わび・さび」に通じる東山文化を生んだ将軍", [7,3,5,5,5,10], "将軍としての統治には苦しみましたが、銀閣寺の造営や茶道・華道・水墨画の庇護を通じ、今に伝わる日本美の原型を創り上げました。"],
+            ["太田道灌", "日本史", "鎌倉・室町・江戸", "🌾", "江戸城を築き文武両道で名を馳せた室町きっての名将", [8,8,8,9,8,9], "足軽戦術を駆使する無敗の軍略家でありながら、「山吹の里」の逸話に象徴されるように和歌や古典の教養も深く愛しました。"],
+            ["本居宣長", "日本史", "鎌倉・室町・江戸", "🌸", "35年かけて『古事記伝』を完成させ「もののあはれ」を説いた国学者", [8,6,8,10,9,10], "昼は町医者として患者を診ながら、夜は日本の古典を実証的に研究し、人間の自然な感情を肯定する思想を確立しました。"],
+            ["吉田兼好", "日本史", "鎌倉・室町・江戸", "🖋️", "『徒然草』で人間と世間の真理を軽妙かつ冷静に見つめた随筆家", [7,4,7,9,6,10], "乱世の移ろいゆく世相から一歩距離を置き、ユーモアと深い洞察力で「無常」の美しさと生き方の知恵を綴りました。"],
+            ["長谷川平蔵", "日本史", "鎌倉・室町・江戸", "🏮", "凶悪な盗賊を取り締まりつつ人足寄場で更生にも尽くした火付盗賊改方", [8,9,9,8,9,6], "清濁併せ呑む現場感覚で江戸の治安を守り、罪を犯した者に職業訓練を行って社会復帰させる先進的な福祉政策も実現しました。"],
+            ["伊沢修二", "日本史", "幕末・明治", "🎵", "近代日本の音楽教育と吃音矯正・台湾教育の基礎を築いた開拓者", [8,8,8,9,8,9], "西洋音楽と日本の伝統音楽の折衷を図り、東京音楽学校（現・東京藝大）の初代校長として日本の教育近代化に奔走しました。"],
+            ["南方熊楠", "日本史", "幕末・明治", "🍄", "粘菌研究から民俗学・自然保護まで18言語を操った「歩く百科事典」", [10,8,5,10,9,10], "大英博物館で研究論文を多数発表し、帰国後は神社の森を守るエコロジー運動の先駆けとなった規格外の在野の天才学者です。"],
+            ["牧野富太郎", "日本史", "幕末・明治", "🌿", "「雑草という草はない」日本の植物分類学の礎を築いた植物の父", [9,8,7,9,10,9], "独学で植物研究に没頭し、1500種以上の新種・変種を命名。94年の生涯を純粋な自然への愛と探究心に捧げました。"],
+
+            // === 世界史：古代オリエント・ギリシャ・ローマ (22名) ===
+            ["アレクサンドロス大王", "世界史", "古代ギリシャ・ローマ", "🦁", "常に先頭を駆け世界の果てを目指した東方遠征の若き英雄王", [9,10,7,8,10,8], "哲学者アリストテレスに学び、20歳で即位するやペルシア帝国を破りインドまで到達。東西文化を融合させたヘレニズムの祖です。"],
+            ["ユリウス・カエサル", "世界史", "古代ギリシャ・ローマ", "🎲", "「賽は投げられた」決断力と寛容さでローマを変革した天才政治家", [10,10,8,9,8,8], "卓越した軍事的才能、政敵をも許す寛容さ、そして『ガリア戦記』にみられる一流の文才を兼ね備えたカリスマ指導者です。"],
+            ["アウグストゥス", "世界史", "古代ギリシャ・ローマ", "🏛️", "慎重な政治手腕で内乱を収め「ローマの平和」を築いた初代皇帝", [8,6,8,10,7,7], "カエサルの後継者として若くして権力を握りながら、共和政の伝統を尊重する巧みな制度設計で200年続く繁栄の基礎を創りました。"],
+            ["クレオパトラ7世", "世界史", "古代ギリシャ・ローマ", "🐍", "数ヶ国語を操る知性と外交力で超大国ローマと渡り合った最後の女王", [8,8,8,10,9,9], "単なる美貌だけでなく、高度な教養・語学力・経済手腕を武器にカエサルやアントニウスを魅了しエジプトの独立を守り抜きました。"],
+            ["ハンニバル・バルカ", "世界史", "古代ギリシャ・ローマ", "🐘", "アルプス越えとカンナエの包囲殲滅戦でローマを震撼させた戦術の極致", [10,10,7,10,9,5], "常識破りのアルプス山脈突破と、戦史に残る完璧な包囲戦術で格上のローマ軍を幾度も打ち破った不世出の名将です。"],
+            ["スキピオ・アフリカヌス", "世界史", "古代ギリシャ・ローマ", "🛡️", "敵の戦術を学び進化させハンニバルを破ったローマの救国英雄", [8,9,8,10,8,7], "敗戦の教訓から柔軟に戦術を改良し、ザマの戦いでカルタゴに勝利をもたらした若き天才指揮官です。"],
+            ["マルクス・アウレリウス", "世界史", "古代ギリシャ・ローマ", "📖", "戦陣のなかで『自省録』を綴り徳と義務を全うした「哲人皇帝」", [6,6,9,9,9,9], "五賢帝の最後を飾る皇帝として、疫病や辺境の防衛戦という激務のなかでもストア派哲学に基づく心の平穏と公への奉仕を貫きました。"],
+            ["ソクラテス", "世界史", "古代ギリシャ・ローマ", "🦉", "「無知の知」と対話によって人々の思い込みを揺さぶった哲学の祖", [9,6,7,10,10,8], "自らは本を書かず、街角での徹底した問答を通じて「善く生きるとは何か」を問い続け、毒杯を仰ぐ最期まで信念を曲げませんでした。"],
+            ["プラトン", "世界史", "古代ギリシャ・ローマ", "🌌", "イデア論とアカデメイア創設で西洋思想の土台を築いた哲学者", [9,5,6,10,9,10], "師ソクラテスの死を機に理想の国家と真理の探究へ進み、数学や哲学を教える学園アカデメイアを創設しました。"],
+            ["アリストテレス", "世界史", "古代ギリシャ・ローマ", "📚", "論理学から生物学・詩学まであらゆる知を体系化した「万学の祖」", [9,6,7,10,7,10], "抽象的な理想だけでなく現実の自然や社会を徹底的に観察・分類し、後世の科学と哲学の礎を築いた知の巨人です。"],
+            ["アルキメデス", "世界史", "古代ギリシャ・ローマ", "🛁", "「エウレカ！」のひらめきと数学・物理学で時代を先取りした大科学者", [10,5,4,10,8,9], "浮力の原理やてこの原理を発見し、故郷シラクサを守るための独創的な防衛兵器も考案した古代最高の理系頭脳です。"],
+            ["ピタゴラス", "世界史", "古代ギリシャ・ローマ", "📐", "「万物は数である」世界の調和と幾何学・音楽の法則を見出した思想家", [9,5,6,10,8,10], "直角三角形の定理だけでなく、音階の比率と数学の美しい関係性を発見し、世界の背後にある秩序を探究しました。"],
+            ["ヒポクラテス", "世界史", "古代ギリシャ・ローマ", "🌿", "迷信から医学を切り離し科学的な観察と医療倫理を確立した「医学の父」", [8,6,9,10,8,7], "病気を神の祟りではなく自然の原因によるものとして観察・記録し、今なお受け継がれる医師の倫理「ヒポクラテスの誓い」を残しました。"],
+            ["ヘロドトス", "世界史", "古代ギリシャ・ローマ", "🗺️", "自らの足で各地を旅し聞き書きで『歴史』を著した「歴史の父」", [8,7,8,8,7,9], "ギリシャとペルシアの戦争の原因を明らかにするため各地の風俗や伝承を取材し、旺盛な好奇心で人類初の本格的な歴史書をまとめました。"],
+            ["ペリクレス", "世界史", "古代ギリシャ・ローマ", "🏛️", "アテネの直接民主政とパルテノン神廟の黄金時代を導いた名指導者", [8,7,9,9,8,9], "卓越した演説と清廉な人柄で市民の支持を集め、政治の民主化と芸術・哲学の繁栄を同時に実現しました。"],
+            ["レオニダス1世", "世界史", "古代ギリシャ・ローマ", "🛡️", "わずか300人の精鋭と共に大軍の前に立ち塞がったスパルタの獅子王", [4,10,7,6,10,3], "テルモピレーの戦いで圧倒的なペルシア大軍を相手に一歩も引かず、仲間と祖国を守るために命を懸けて戦い抜きました。"],
+            ["スパルタクス", "世界史", "古代ギリシャ・ローマ", "⛓️", "鎖を断ち切り自由を求めてローマ正規軍を連破した剣闘士のリーダー", [8,10,8,7,10,4], "虐げられた奴隷や剣闘士たちを束ね、自由と尊厳を取り戻すために超大国ローマを相手に奇跡的な快進撃を繰り広げました。"],
+            ["ハンムラビ王", "世界史", "古代ギリシャ・ローマ", "🪨", "「目には目を」成文法によって帝国の公平な秩序を定めたバビロニア王", [8,8,6,10,8,6], "過度な復讐を禁じ、国家が明確な基準で裁く法典を石碑に刻んで公開することで、多民族が暮らす社会の安定を図りました。"],
+            ["ラムセス2世", "世界史", "古代ギリシャ・ローマ", "☀️", "世界最古の平和条約を結びアブ・シンベル大神殿を築いたエジプト大王", [7,8,8,9,8,9], "カデシュの戦いの後にヒッタイトと史上初の成文平和条約を締結し、66年間の長期政権で壮大な建築と繁栄を残しました。"],
+            ["キュロス2世", "世界史", "古代ギリシャ・ローマ", "🦅", "異民族の宗教や文化を尊重する寛容政策で巨大ペルシア帝国を築いた王", [8,9,10,8,8,7], "征服した諸民族の信仰や自治を認め、バビロン捕囚のユダヤ人を解放するなど、寛容と多様性によって広大な帝国を統治しました。"],
+            ["キケロ", "世界史", "古代ギリシャ・ローマ", "🗣️", "剣ではなく弁論と言葉の力で共和政ローマの自由を守ろうとした哲人政治家", [6,6,8,9,9,9], "ラテン語の散文と雄弁術を完成の域に高め、独裁へと傾くローマにおいて法と共和政の理念を最期まで訴え続けました。"],
+            ["ゼノビア", "世界史", "古代ギリシャ・ローマ", "🐪", "砂漠の交易都市パルミラを率いてローマ帝国に挑んだ東方の美しき女王", [8,9,7,8,9,8], "多言語を操り知識人を保護する高い教養を持ちながら、自ら馬に乗って軍を指揮しオリエント一帯を席巻しました。"],
+
+            // === 世界史：アジア・中国・モンゴル・インド・中東 (32名) ===
+            ["孔子", "世界史", "アジア・中国史", "📘", "「仁」と「礼」の教えで東アジア2500年の道徳の礎を築いた大思想家", [6,6,10,8,9,9], "戦乱の春秋時代において、武力や刑罰ではなく「人を思いやる心（仁）」と教養によって社会を平和に導こうと旅を続けました。"],
+            ["老子", "世界史", "アジア・中国史", "💧", "「無為自然」「上善は水のごとし」と説いたタオイズム（道家）の祖", [8,3,8,8,6,10], "無理に競ったり人工的なルールで縛ったりせず、水のように柔軟で自然体な生き方にこそ真の強さがあると説きました。"],
+            ["孫武(孫子)", "世界史", "アジア・中国史", "🎋", "「戦わずして勝つ」今なお世界のビジネスで読まれる最高峰の兵法家", [8,6,6,10,6,7], "「彼を知り己を知れば百戦殆うからず」など、感情を排した徹底的な情報分析と不敗の戦略理論『孫子』を完成させました。"],
+            ["始皇帝(嬴政)", "世界史", "アジア・中国史", "🐉", "文字・通貨・度量衡を統一し史上初の中華帝国を創り上げた絶対君主", [10,10,2,9,8,5], "500年続いた戦乱に終止符を打ち、万里の長城や郡県制など、後世の中国2000年の国家システムを一気に構築しました。"],
+            ["項羽", "世界史", "アジア・中国史", "⚡", "「力山を抜き気世を蓋う」圧倒的な武勇と誇りに生きた西楚の覇王", [6,10,4,4,10,6], "戦場では無敵のカリスマ性と突破力を誇り、愛する虞美人との別れ（四面楚歌）まで劇的な美学を貫いた不世出の武将です。"],
+            ["劉邦", "世界史", "アジア・中国史", "🍶", "自分の弱さを認め一流の天才たちに仕事を任せて天下を獲った漢の高祖", [7,7,10,7,7,5], "軍事も内政も部下（韓信・蕭何・張良）には及ばないことを自覚し、「人を使いこなす器量」ひとつで項羽に勝利しました。"],
+            ["韓信", "世界史", "アジア・中国史", "🚩", "「背水の陣」「国士無双」漢の天下統一を決定づけた不敗の軍事天才", [9,8,4,10,7,5], "若い頃は股くぐりの屈辱にも耐える冷静さを持ち、ひとたび大軍を任されれば独創的な戦術で連戦連勝を収めました。"],
+            ["張良", "世界史", "アジア・中国史", "🪶", "「帷幄の中に謀を巡らし千里の外に勝つ」劉邦を導いた冷静沈着な名軍師", [8,5,8,10,7,8], "自らは剣を振るわず、的確な情勢判断と人間心理の洞察で劉邦の危機を幾度も救い、功成り名を遂げた後は静かに身を引きました。"],
+            ["曹操", "世界史", "アジア・中国史", "🗡️", "「乱世の奸雄」合理主義と多才さで三国志最強の覇権を築いた英雄", [9,9,6,10,8,9], "家柄を問わず有能な人材を登用（唯才令）し、政治・軍事の頂点に立ちながら一流の詩人としても名を馳せた万能の覇者です。"],
+            ["劉備", "世界史", "アジア・中国史", "🍑", "どれほど負けても人が集まる「仁徳」と大義で蜀漢を建国したリーダー", [5,7,10,6,10,6], "領地を持たず各地を転々としながらも、人を大切にする誠実さと諦めない情熱で関羽・張飛・諸葛亮らの絶対的な忠誠を得ました。"],
+            ["諸葛亮(孔明)", "世界史", "アジア・中国史", "🪭", "「天下三分の計」と揺るぎない忠誠心で歴史に名を刻んだ知略の象徴", [8,6,8,10,10,8], "三顧の礼に応えて出廬し、卓越した外交・内政・発明の才で小国・蜀を支え抜き、『出師の表』の誠実さで後世に愛されました。"],
+            ["関羽", "世界史", "アジア・中国史", "🐉", "千金の富にもなびかず義を貫き「商売と信義の神」となった美髯公", [4,10,7,7,10,5], "圧倒的な武勇はもちろん、敵将・曹操からどれほど厚遇されても旧主・劉備との約束を忘れず帰還した信義の象徴です。"],
+            ["周瑜", "世界史", "アジア・中国史", "🔥", "赤壁の戦いで大軍を焼き払った若き知勇兼備・音楽通の美周郎", [8,8,8,9,8,9], "孫権の覇業を支えた呉の若き総司令官。大軍を前にしても動じない度胸と、音楽のわずかな間違いにも気づく高い教養を持ちました。"],
+            ["孫権", "世界史", "アジア・中国史", "🐯", "父兄の基業を継ぎ個性豊かな豪傑たちをまとめ上げた呉の若き名君", [6,7,9,8,7,6], "10代で後を継ぎ、ベテランの重臣や若き才能の意見に耳を傾けながら、長江の地の利を活かして魏・蜀と渡り合いました。"],
+            ["司馬懿", "世界史", "アジア・中国史", "🐢", "孔明の挑発にも決して乗らず最後に三国時代を制した究極の忍耐戦略家", [6,5,5,10,6,6], "どれほど周囲から臆病と罵られても勝機が熟すまで徹底して守りを固め、長期戦で確実な勝利を手中に収めました。"],
+            ["太宗(李世民)", "世界史", "アジア・中国史", "🏛️", "部下の耳の痛い諫言にも素直に耳を傾け「貞観の治」を築いた唐の名君", [8,9,9,9,8,8], "若き日は最強の司令官として唐の建国を主導し、即位後は魏徴らの厳しい批判を受け入れて世界帝国・唐の黄金時代を開きました。"],
+            ["則天武后(武則天)", "世界史", "アジア・中国史", "鳳", "中国史上唯一の女帝として科挙と実力主義を推進した鉄腕の統治者", [9,9,4,10,8,8], "伝統的な貴族層の抵抗を打ち破り、家柄ではなく科挙（試験）による有能な官僚の抜擢を進めて唐の国力を維持しました。"],
+            ["李白", "世界史", "アジア・中国史", "🌙", "酒と月を愛し自由奔放なイマジネーションで世界を詠んだ「詩仙」", [9,7,6,4,8,10], "宮廷の窮屈な礼儀作法に縛られず、壮大なスケールと浪漫あふれる漢詩で人々の心を解き放った天才詩人です。"],
+            ["杜甫", "世界史", "アジア・中国史", "🖌️", "戦乱に苦しむ民衆への深い同情と格調高い表現で知られる「詩聖」", [6,4,9,8,9,10], "「国破れて山河在り」と詠み、自らの不遇のなかでも社会への誠実な眼差しと完璧な詩の技法を追求しました。"],
+            ["王安石", "世界史", "アジア・中国史", "📊", "既得権益に挑み国家財政と庶民救済の「新法」を断行した宋の改革宰相", [9,8,5,10,9,8], "低利融資や税制改革など近代的な経済政策を次々と打ち出し、保守派の猛反発を受けながらも自らの信念を貫きました。"],
+            ["チンギス・ハン", "世界史", "アジア・中国史", "🐎", "部族の枠を超えた実力主義と機動力でユーラシア帝国を築いた蒼き狼", [9,10,7,9,9,5], "過酷な少年時代からモンゴル高原を統一。出自を問わない人材登用と圧倒的な情報網・騎馬戦術で世界の地図を塗り替えました。"],
+            ["フビライ・ハン", "世界史", "アジア・中国史", "🌐", "多様な民族と文化・商業を融合させ大元ウルスを統治した国際派皇帝", [9,8,8,9,7,8], "草原の伝統と中国の統治機構、イスラムの財政・科学技術、さらにはマルコ・ポーロら異国人まで柔軟に活用した現実主義の覇者です。"],
+            ["鄭和", "世界史", "アジア・中国史", "⛵", "コロンブスに先駆け巨大艦隊でアフリカ東岸まで大航海を成し遂げた提督", [8,9,8,9,8,6], "2万人以上が乗る宝船艦隊を率いて7度の大航海を指揮し、武力侵略ではなく交易と外交によって南海のネットワークを広げました。"],
+            ["康熙帝", "世界史", "アジア・中国史", "👑", "61年の在位で清の全盛期を築き西洋の数学・天文学も学んだ勤勉なる名君", [8,8,8,10,8,9], "早朝から深夜まで政務と読書を欠かさず、領土の安定と減税を実現しつつ『康熙字典』の編纂や西洋科学の吸収にも努めました。"],
+            ["釈迦(ゴータマ・シッダールタ)", "世界史", "アジア・中国史", "🪷", "王子の地位を捨て生老病死の苦しみを超える「中道」を悟った仏教の開祖", [8,5,10,9,9,9], "極端な快楽も極端な苦行も退け、執着を手放し慈悲と智慧によって心の安らぎを得る普遍的な哲学を説きました。"],
+            ["アショーカ王", "世界史", "アジア・中国史", "🦁", "征服戦争の惨禍を悔い非暴力と福祉による統治へと大転換したインドの王", [8,7,10,7,9,8], "カリンガ征服の犠牲に深く心を痛め、仏教の「法（ダルマ）」に基づく平和政策、病院建設や植樹を全土で進めました。"],
+            ["マハトマ・ガンディー", "世界史", "アジア・中国史", "🕊️", "「非暴力・不服従」の揺るぎない精神でインド独立を導いた偉大なる魂", [9,8,9,7,10,7], "銃や暴力に頼らず、「塩の行進」などの平和的抗議によって大英帝国からの独立へと数億人の民衆の心を動かしました。"],
+            ["サラディン", "世界史", "アジア・中国史", "🌙", "敵である十字軍からも騎士道の鑑と敬愛された寛大なる英雄スルタン", [6,9,10,8,9,7], "エルサレムを奪還しながらも捕虜への虐殺を行わず、宿敵リチャード1世が病に倒れた際には果物と医師を贈った高潔な指導者です。"],
+            ["スレイマン1世", "世界史", "アジア・中国史", "🕌", "法整備と文化の繁栄でオスマン帝国の黄金時代を築いた「壮麗帝」", [8,9,7,9,8,9], "自ら軍を率いてウィーン包囲まで迫る一方、「立法者」として帝国の法体系を整え、壮麗なモスク建築や詩作も愛しました。"],
+            ["イブン・バットゥータ", "世界史", "アジア・中国史", "🐪", "30年かけて約12万キロを旅し当時の世界の姿を生き生きと記録した大旅行家", [8,9,9,7,8,8], "アフリカから中東、インド、中国まで未知の世界を恐れず飛び込み、各地の人々と交流しながら『大旅行記』を残しました。"],
+            ["世宗(セジョン)", "世界史", "アジア・中国史", "🔤", "誰もが読み書きできる「ハングル」を創製し科学技術を振興した朝鮮の名君", [10,6,9,9,8,10], "庶民が自分の思いを文字で表現できるよう学者たちと共に独創的な表音文字「訓民正音」を開発した知性と慈愛の王です。"],
+            ["ラデン・カルティニ", "世界史", "アジア・中国史", "🌺", "「闇から光へ」インドネシアの女性教育と民族意識の夜明けを拓いた先駆者", [8,7,9,7,10,9], "古い慣習の中で女性の教育機会を求めて学校を設立し、その書簡集は多くの人々の心に自由と自立の灯をともしました。"],
+
+            // === 世界史：ヨーロッパ中世・ルネサンス・大航海 (24名) ===
+            ["カール大帝(シャルルマーニュ)", "世界史", "中世・ルネサンス", "👑", "西ヨーロッパを統一し学問と文化の復興を進めた「ヨーロッパの父」", [7,9,7,8,8,8], "広大なフランク王国を築き、各地から学者を招いてカロリング・ルネサンスと呼ばれる教育・文化の再生を主導しました。"],
+            ["ジャンヌ・ダルク", "世界史", "中世・ルネサンス", "🚩", "10代の少女の身で百年戦争の絶望からフランスを救った奇跡の聖女", [7,10,7,4,10,5], "圧倒的に不利だったフランス軍の先頭に旗を掲げて立ち、その純粋な信念と勇気で兵士たちの士気を劇的に奮い立たせました。"],
+            ["リチャード1世(獅子心王)", "世界史", "中世・ルネサンス", "🦁", "戦場の最前線で剣を振るい生涯を騎士道と遠征に捧げたイングランド王", [5,10,6,5,9,6], "行政よりも戦場を愛し、第3回十字軍でサラディンと互角の名勝負を繰り広げた圧倒的な武勇とカリスマの王です。"],
+            ["レオナルド・ダ・ヴィンチ", "世界史", "中世・ルネサンス", "🎨", "芸術・解剖学・航空工学のすべてを極めたルネサンス「万能の天才」", [10,6,6,10,8,10], "『モナ・リザ』の絵画からヘリコプターの設計図まで、底なしの好奇心と観察眼で芸術と科学の境界を超越しました。"],
+            ["ミケランジェロ", "世界史", "中世・ルネサンス", "🗿", "大理石から魂を彫り出しシスティーナ礼拝堂を一人で描き切った孤高の巨匠", [9,8,3,7,10,10], "妥協を一切許さない完璧主義と超人的な情熱で、『ダヴィデ像』や『最後の審判』など人類史に残る傑作を生み出しました。"],
+            ["ニコロ・マキャヴェッリ", "世界史", "中世・ルネサンス", "🦊", "理想論を排し『君主論』で政治のリアルな力学を解剖した近代政治学の父", [9,6,4,10,7,7], "「獅子のような強さと狐のような狡猾さ」の必要性を説き、人間の本性と権力の現実を冷徹な観察眼で分析しました。"],
+            ["ヨハネス・グーテンベルク", "世界史", "中世・ルネサンス", "🖨️", "活版印刷術の発明で人類の「知の民主化」と情報革命を起こした発明家", [10,7,6,9,8,8], "金属活字とワイン絞り機を応用した印刷機を開発し、一部の特権階級のものだった書物と知識を世界中へ広めました。"],
+            ["マルティン・ルター", "世界史", "中世・ルネサンス", "🔨", "巨大な教会権威に『95ヶ条の論題』で挑み宗教改革の口火を切った神学者", [9,9,6,8,10,8], "「私の良心は神の言葉に囚われている」と語り、免罪符の批判と聖書のドイツ語翻訳によって近代の個人の内面的自由を開きました。"],
+            ["クリストファー・コロンブス", "世界史", "中世・ルネサンス", "🧭", "未知の大西洋へ漕ぎ出し世界の歴史を大きく転換させた不屈の航海者", [9,10,4,7,9,4], "周囲の反対や資金難を何年もかけて説得し、誰も渡ったことのない西回り航路へと踏み出す圧倒的なリスクテイク精神を見せました。"],
+            ["フェルディナンド・マゼラン", "世界史", "中世・ルネサンス", "🌍", "荒れ狂う海峡を抜け人類初の世界周航への道を切り拓いた鉄の航海者", [9,10,5,8,9,4], "反乱や飢餓という極限状況の航海を強い意志で統率し、地球がひとつに繋がっていることを実証しました。"],
+            ["エリザベス1世", "世界史", "中世・ルネサンス", "👑", "「私は国家と結婚した」巧みな外交とバランス感覚で黄金期を築いた女王", [8,8,8,10,9,8], "宗教対立を穏健に収め、スペイン無敵艦隊を撃破。シェイクスピアが活躍する大英帝国飛躍の礎を築きました。"],
+            ["ウィリアム・シェイクスピア", "世界史", "中世・ルネサンス", "🎭", "人間のあらゆる感情とドラマを言葉の魔法で描き尽くした不滅の劇作家", [9,6,8,8,8,10], "『ハムレット』『ロミオとジュリエット』など、王から道化まで人間の普遍的な弱さと輝きを圧倒的な表現力で描きました。"],
+            ["ミゲル・デ・セルバンテス", "世界史", "中世・ルネサンス", "🛡️", "『ドン・キホーテ』で理想と現実の狭間をユーモアと共に描いた近代小説の祖", [9,7,8,7,9,10], "海戦での負傷や捕虜生活など波乱万丈の人生を送りながら、夢を追い続ける人間の愛おしさを不朽の名作に込めました。"],
+            ["ジャン・カルヴァン", "世界史", "中世・ルネサンス", "⚖️", "緻密な論理と勤勉の倫理で近代資本主義の精神的土壌を創った改革者", [8,7,4,10,9,6], "ジュネーヴで厳格な規律と教育を整え、日々の職業労働を神からの使命（天職）と捉える新しい労働観を確立しました。"],
+            ["トマス・モア", "世界史", "中世・ルネサンス", "🏝️", "『ユートピア』で理想社会を描き国王の権力にも良心を曲げなかった人文主義者", [8,6,8,9,10,9], "ユーモアを愛する温厚な知識人でありながら、ヘンリー8世の不当な要求には死を賭してでも良心と法を守り抜きました。"],
+            ["ロレンツォ・デ・メディチ", "世界史", "中世・ルネサンス", "⚜️", "フィレンツェの平和を守りボッティチェリやミケランジェロを育てた「豪華王」", [8,7,9,9,7,10], "巧みな外交でイタリアの均衡を保ちつつ、若い芸術家や哲学者たちの才能を見抜いて惜しみなく支援した最高のパトロンです。"],
+            ["ダンテ・アリギエーリ", "世界史", "中世・ルネサンス", "🌟", "故郷追放の苦難のなかで壮大な『神曲』を書き上げたルネサンスの先駆者", [9,6,6,8,10,10], "ラテン語ではなく民衆のイタリア語で地獄・煉獄・天国を巡る魂の旅を描き、中世から近代への扉を開きました。"],
+            ["マルコ・ポーロ", "世界史", "中世・ルネサンス", "🐫", "シルクロードを越え東方の驚異をヨーロッパに伝えたヴェネツィアの商人", [8,8,8,8,7,8], "17年間にわたりフビライ・ハンの元朝に仕え、『世界の記述（東方見聞録）』によって大航海時代の好奇心に火をつけました。"],
+            ["ヴァスコ・ダ・ガマ", "世界史", "中世・ルネサンス", "⛵", "喜望峰を回りヨーロッパとインドを結ぶ直接航路を開拓したポルトガルの航海者", [8,9,5,8,8,4], "未知の海域と長期航海の困難を乗り越え、アジアとヨーロッパの香辛料貿易ルートを劇的に変革しました。"],
+            ["エレオノール・ダキテーヌ", "世界史", "中世・ルネサンス", "🌹", "フランス王妃からイングランド王妃へ、騎士道文学を花開かせた中世随一の女傑", [8,8,7,8,9,10], "自ら十字軍にも同行する行動力を持ち、吟遊詩人を保護して宮廷の恋愛文学（騎士道物語）をヨーロッパに広めました。"],
+            ["フリードリヒ2世(神聖ローマ)", "世界史", "中世・ルネサンス", "🦅", "6ヶ国語を操りイスラム文化と科学を愛した「世界の驚異」と呼ばれた皇帝", [10,7,7,10,6,9], "中世でありながら宗教的偏見を持たず、アラビア語で学術議論を交わし、無血の外交交渉でエルサレムを一時回復した異才です。"],
+            ["フランチェスコ(アッシジ)", "世界史", "中世・ルネサンス", "🐦", "富裕な商人の家を捨て清貧とすべての生き物への愛を実践した聖人", [7,6,10,4,10,8], "財産への執着を手放し、太陽や月、小鳥にまで「兄弟姉妹」と呼びかける無垢な愛と平和の精神で人々の心を癒やしました。"],
+            ["フランシスコ・ザビエル", "世界史", "中世・ルネサンス", "✝️", "地球の反対側である日本まで命がけで布教の旅を続けたイエズス会の開拓者", [8,9,9,7,10,7], "パリ大学での学究生活から一転、インド・東南アジア・日本へと未知の海を渡り、異文化の人々と真摯に向き合いました。"],
+            ["レンブラント", "世界史", "中世・ルネサンス", "🕯️", "光と影の魔術によって人間の内面のドラマを描き出したオランダ絵画の巨匠", [9,6,6,7,8,10], "『夜警』や数々の自画像を通じ、表面的な美しさだけでなく人間の喜びや苦悩の深みを劇的な明暗法で表現しました。"],
+
+            // === 世界史：近世・近代（欧米・革命・産業・政治）(38名) ===
+            ["ナポレオン・ボナパルト", "世界史", "近代欧米・政治", "🦅", "「我が辞書に不可能の文字はない」全欧州を席巻した軍事と法典の天才", [10,10,6,10,9,6], "砲兵将校からフランス皇帝へと駆け上がり、圧倒的なスピード戦術だけでなく近代市民社会の基礎となる『ナポレオン法典』を残しました。"],
+            ["ジョージ・ワシントン", "世界史", "近代欧米・政治", "🦅", "独立戦争を勝ち抜き権力に固執せず民主主義の手本を示したアメリカ建国の父", [7,8,9,8,9,5], "苦しい独立戦争を粘り強く戦い抜き、終身の大統領になれる人望がありながら2期で潔く退任して共和政の伝統を確立しました。"],
+            ["エイブラハム・リンカーン", "世界史", "近代欧米・政治", "🎩", "「人民の、人民による、人民のための政治」南北戦争を導いた信念の大統領", [8,8,9,8,10,7], "丸太小屋の貧しい生まれから独学で弁護士となり、国家分裂の危機に際して奴隷解放と連邦の維持を不屈の意志で成し遂げました。"],
+            ["トーマス・ジェファーソン", "世界史", "近代欧米・政治", "✒️", "「すべての人は平等に造られている」アメリカ独立宣言を起草した哲人政治家", [9,6,8,9,9,9], "自由と人権の理念を格調高い言葉で世界に宣言し、建築・科学・教育にも造詣が深かった多才な啓蒙思想家です。"],
+            ["ベンジャミン・フランクリン", "世界史", "近代欧米・政治", "🪁", "避雷針の実験から独立外交まで、ユーモアと実学で時代を動かしたマルチ人間", [9,8,9,9,7,8], "印刷工から身を起こし、科学者・著述家・外交官として活躍。「時は金なり」の実践的な生活哲学でも知られます。"],
+            ["ピョートル大帝", "世界史", "近代欧米・政治", "🔨", "自ら身分を隠して西欧へ留学し造船からロシアの近代化を強行した豪腕皇帝", [10,10,4,8,9,6], "2メートルを超える巨躯で自ら斧を振るって船を造り、サンクトペテルブルクを建設してロシアをヨーロッパ列強へと押し上げました。"],
+            ["エカチェリーナ2世", "世界史", "近代欧米・政治", "👑", "啓蒙思想家と文通しながら領土拡大と芸術保護を進めたロシアの女帝", [8,8,7,9,8,9], "ドイツの小貴族からロシア皇帝へと登り詰め、エルミタージュ美術館の礎を築くなど文化と強権政治を巧みに操りました。"],
+            ["マリア・テレジア", "世界史", "近代欧米・政治", "🌹", "16人の子を育てながらハプスブルク帝国の危機を乗り切った「国母」", [7,8,9,8,9,8], "若くして即位し周囲の大国から領土を狙われるなか、持ち前の胆力と温かい人間味で諸侯を味方につけ近代化改革を進めました。"],
+            ["フリードリヒ2世(大王)", "世界史", "近代欧米・政治", "🪈", "フルートと哲学を愛しつつプロイセンを軍事大国へ育てた「啓君の典型」", [8,9,5,10,8,9], "「君主とは国家第一の僕である」と語り、ヴォルテールと親交を深める文化人でありながら、戦場では卓越した斜行戦術を駆使しました。"],
+            ["オットー・フォン・ビスマルク", "世界史", "近代欧米・政治", "♟️", "「鉄血政策」と緻密な外交網でドイツ統一と欧州の均衡を操った宰相", [8,8,5,10,8,5], "戦争だけでなく、勝利の後は素早く寛大な講和と複雑な同盟網を築き、さらに世界初の社会保険制度も導入した超一流のリアリストです。"],
+            ["ヴィクトリア女王", "世界史", "近代欧米・政治", "💎", "「太陽の沈まぬ国」大英帝国の絶頂期と繁栄の象徴となった女王", [6,6,8,7,8,8], "63年間にわたり在位し、立憲君主としての節度と家庭的な道徳観によって産業革命期イギリスの安定を支えました。"],
+            ["ホレーショ・ネルソン", "世界史", "近代欧米・政治", "⚓", "隻眼・隻腕にして常に先頭で戦いトラファルガーの海戦を制した救国の提督", [8,10,8,8,10,5], "「英国は各員がその義務を尽くすことを期待する」の信号旗を掲げ、大胆な戦術と部下からの絶対的な信頼でナポレオンの野望を砕きました。"],
+            ["ウィンストン・チャーチル", "世界史", "近代欧米・政治", "✌️", "絶望の第二次大戦下で国民を鼓舞しノーベル文学賞も受賞した不屈の首相", [8,9,7,8,10,9], "「血と労苦と涙と汗」の名演説でナチス・ドイツへの徹底抗戦を貫き、絵画や歴史著述にも非凡な才能を発揮しました。"],
+            ["シャルル・ド・ゴール", "世界史", "近代欧米・政治", "🇫🇷", "亡命先からレジスタンスを呼びかけフランスの誇りと独立を守り抜いた将軍", [7,9,5,8,10,7], "祖国が降伏しても決して諦めず、戦後は第五共和政を樹立して大国フランスの独自の外交路線を確立しました。"],
+            ["ジョン・F・ケネディ", "世界史", "近代欧米・政治", "🚀", "キューバ危機を回避しアポロ計画で人類の宇宙への夢を掲げた若き大統領", [9,8,8,8,9,7], "「国があなたに何をしてくれるかではなく、あなたが国に何ができるかを問うてほしい」と語り、若々しい理想で世界を魅了しました。"],
+            ["フランクリン・ルーズベルト", "世界史", "近代欧米・政治", "📻", "ニューディール政策と「炉辺談話」で世界恐慌と大戦を乗り切った大統領", [9,8,9,9,9,6], "ポリオによる車椅子生活を乗り越え、ラジオを通じて国民に温かく語りかけながら、未曽有の経済危機に大胆な政府介入で立ち向かいました。"],
+            ["ネルソン・マンデラ", "世界史", "近代欧米・政治", "🌈", "27年間の投獄を乗り越え「報復ではなく和解」でアパルトヘイトを終わらせた闘士", [8,8,10,8,10,7], "自身を苦しめた白人政権に対しても憎しみではなく寛容と対話の姿勢を貫き、「虹の国」南アフリカの平和的移行を実現しました。"],
+            ["マーティン・ルーサー・キング・Jr.", "世界史", "近代欧米・政治", "🕊️", "「私には夢がある」非暴力の公民権運動で人種差別の壁を揺るがした牧師", [8,8,10,7,10,8], "聖書の言葉と魂を揺さぶる演説によって、肌の色ではなく人格によって評価される社会を目指して平和的な行進を導きました。"],
+            ["シモン・ボリバル", "世界史", "近代欧米・政治", "🐎", "アンデスを越え南米諸国をスペイン支配から解放した「リベルタドール(解放者)」", [9,10,7,7,10,6], "幾度もの敗北と亡命を経験しながらも不屈の情熱で立ち上がり、ラテンアメリカの独立と統合の夢に生涯を捧げました。"],
+            ["ジュゼッペ・ガリバルディ", "世界史", "近代欧米・政治", "🧣", "赤シャツ隊を率いてイタリア統一を成し遂げ権力を求めず去った無欲の英雄", [7,10,8,5,10,5], "わずか千人の義勇兵で南イタリアを解放しながら、統一のために獲得した全領土を惜しみなく国王に献上して小さな島へと帰りました。"],
+            ["ジョン・ロック", "世界史", "近代欧米・政治", "⚖️", "「人間の生まれながらの権利」と社会契約説で近代民主主義の理論を創った哲学者", [9,5,8,10,8,8], "生命・自由・財産を守るために政府は存在し、暴政に対しては国民に抵抗権があると説き、アメリカ独立宣言やフランス革命の原点となりました。"],
+            ["ジャン＝ジャック・ルソー", "世界史", "近代欧米・政治", "🌿", "『社会契約論』『エミール』で人民主権と自然な人間性の回復を訴えた思想家", [9,5,7,7,9,10], "文明社会の不平等を鋭く批判し、理性だけでなく人間の豊かな感情と自由の尊さを説いてロマン主義の先駆けとなりました。"],
+            ["ヴォルテール", "世界史", "近代欧米・政治", "✒️", "鋭い風刺とユーモアで狂信や不寛容と戦い抜いたフランス啓蒙思想の旗手", [9,7,7,9,9,9], "言論の自由と寛容の精神を何よりも重んじ、不当な裁判や権力の横暴に対してペンの力で生涯戦いました。"],
+            ["モンテスキュー", "世界史", "近代欧米・政治", "🏛️", "『法の精神』で権力の暴走を防ぐ「三権分立」を体系化した政治哲学者", [8,5,8,10,7,8], "古今東西の政治制度と気候・風土を冷静に比較分析し、立法・行政・司法を分ける近代憲法の最も重要な仕組みを考案しました。"],
+            ["アダム・スミス", "世界史", "近代欧米・政治", "📈", "『国富論』と『道徳感情論』で市場のメカニズムと人間の共感を解明した経済学の父", [9,5,8,10,7,8], "「見えざる手」による自由な経済活動の重要性を説くと同時に、人間が持つ他者への「共感」こそが社会秩序の基礎であると論じました。"],
+            ["イマヌエル・カント", "世界史", "近代欧米・政治", "🕰️", "時計のように規則正しい生活の中で人間理性の限界と道徳・永遠平和を究めた哲学者", [9,3,7,10,8,9], "故郷ケーニヒスベルクから一歩も出ることなく、『純粋理性批判』によって西洋哲学のすべてを統合・刷新する知的革命を起こしました。"],
+            ["フリードリヒ・ニーチェ", "世界史", "近代欧米・政治", "⚡", "「神は死んだ」既存の道徳を根底から問い直し『超人』と生の肯定を説いた哲学者", [10,5,3,8,9,10], "どんな運命をも愛する「運命愛」と力への意志を詩的なアフォリズムで綴り、20世紀の思想や芸術に計り知れない衝撃を与えました。"],
+            ["ルネ・デカルト", "世界史", "近代欧米・政治", "💭", "「我思う、ゆえに我あり」徹底的な懐疑と数学的論理で近代哲学の扉を開いた思想家", [9,5,5,10,7,8], "すべての思い込みを一度疑い抜くことから確実な真理を導き出し、座標幾何学の創始者としても近代科学の基礎を築きました。"],
+            ["エレノア・ルーズベルト", "世界史", "近代欧米・政治", "📜", "ファーストレディの枠を超え『世界人権宣言』の採択を主導した人権の母", [8,8,10,8,10,7], "大統領夫人として社会的弱者の現場を駆け回り、戦後は国連人権委員会の委員長として世界中の人々の尊厳を守る宣言をまとめ上げました。"],
+            ["フローレンス・ナイチンゲール", "世界史", "近代欧米・政治", "🕯️", "「クリミアの天使」でありつつ統計学を駆使して医療と軍の衛生改革を断行した闘士", [9,9,9,10,10,6], "優しい献身だけでなく、「鶏のトサカ」と呼ばれるグラフ（統計データ）を用いて政治家や軍部を論破し、病院の死亡率を劇的に下げました。"],
+            ["アンリ・デュナン", "世界史", "近代欧米・政治", "➕", "戦場の惨状に衝撃を受け「敵味方の区別なく負傷者を救う」赤十字を創設した博愛の人", [8,8,10,6,10,6], "ソルフェリーノの戦場での救護体験を本に著し、ヨーロッパ各国の元首を説得してジュネーヴ条約と国際赤十字運動を生み出しました。"],
+            ["ヘレン・ケラー", "世界史", "近代欧米・政治", "💧", "視覚・聴覚・言語の三重苦を乗り越え世界中の人々に希望と勇気を与えた教育家", [7,8,9,7,10,8], "サリバン先生の献身的な導きによって言葉の意味（Water）を悟り、大学を卒業して福祉と平和のために世界中を講演して回りました。"],
+            ["アン・サリバン", "世界史", "近代欧米・政治", "🤲", "あきらめない愛と創意工夫でヘレン・ケラーの閉ざされた世界を開いた奇跡の家庭教師", [8,8,10,8,10,7], "自らも視覚障害と孤独な生い立ちを抱えながら、子どもの可能性を信じて寄り添い抜く教育者の鑑です。"],
+            ["エメリン・パンカースト", "世界史", "近代欧米・政治", "🗳️", "「言葉ではなく行動を」イギリスの女性参政権（サフラジェット）運動を牽引した闘士", [8,10,6,6,10,5], "幾度もの逮捕にも屈せず、女性が対等に政治に参加する権利を勝ち取るために最前線で声を上げ続けました。"],
+            ["ローザ・パークス", "世界史", "近代欧米・政治", "🚌", "バスの中でたった一言「ノー」と言い、公民権運動の巨大な波を起こした静かな勇気の人", [7,8,8,7,10,6], "人種隔離法で白人に席を譲るよう命じられた際、静かに拒否したその一歩がモンゴメリー・バス・ボイコット運動へと繋がりました。"],
+            ["ハリエット・タブマン", "世界史", "近代欧米・政治", "🌟", "自らの脱出後も何度も南部へ潜入し多くの黒人奴隷を自由へ導いた「地下鉄道」の車掌", [7,10,9,8,10,4], "懸賞金をかけられる危険を冒して10回以上も救出作戦を成功させ、一度も仲間を失わなかった驚異の胆力と行動力の女性です。"],
+            ["オリヴァー・クロムウェル", "世界史", "近代欧米・政治", "⚔️", "厳格な信仰と「鉄騎隊」の規律でピューリタン革命を勝ち抜いた軍事・政治指導者", [8,10,4,8,10,3], "敬虔な信仰心で結ばれた精強な騎兵隊を組織し、国王軍を打ち破ってイギリス史上唯一の共和政を実現しました。"],
+            ["ロベスピエール", "世界史", "近代欧米・政治", "⚖️", "「清廉の人」と呼ばれ革命の理想と正義を純粋に追求しすぎたフランス革命の指導者", [8,8,3,8,10,5], "私利私欲や賄賂を一切受け取らない潔癖さを持ちながら、理想の共和国を守るために妥協のない急進的な改革へ突き進みました。"],
+
+            // === 世界史：科学・発明・探検・芸術・文化 (46名) ===
+            ["ガリレオ・ガリレイ", "世界史", "科学・芸術・探検", "🔭", "望遠鏡で宇宙を観測し「それでも地球は動く」近代科学の方法論を確立した父", [10,7,5,10,9,8], "権威や古い教義ではなく「実験と数学的証明」によって自然の法則を解き明かし、地動説の正しさを訴えました。"],
+            ["アイザック・ニュートン", "世界史", "科学・芸術・探検", "🍎", "万有引力・微積分・光学を発見し人類の宇宙観を根底から書き換えた科学の最高峰", [10,5,3,10,8,8], "リンゴの落下から天体の運行までをひとつの数式で統一的に説明し、近代物理学の揺るぎない体系をひとりで築き上げました。"],
+            ["アルベルト・アインシュタイン", "世界史", "科学・芸術・探検", "🌌", "「想像力は知識より重要だ」相対性理論で時間と空間の概念を覆した20世紀最大の天才", [10,5,8,10,8,9], "常識的な時間・空間の枠組みを自由な思考実験で飛び越え、晩年は世界平和と核廃絶を訴えるヒューマニストでもありました。"],
+            ["マリ・キュリー(キュリー夫人)", "世界史", "科学・芸術・探検", "🧪", "ラジウムを発見し史上初のノーベル賞2部門受賞を果たした不屈の女性科学者", [9,8,7,10,10,6], "極貧の屋根裏部屋や冷え切る実験室での過酷な作業を乗り越え、放射能研究の道を切り拓きつつ特許を独占せず社会に開放しました。"],
+            ["トーマス・エジソン", "世界史", "科学・芸術・探検", "💡", "「天才とは1%のひらめきと99%の努力」白熱電球や蓄音機で現代社会を創った発明王", [10,10,6,8,9,5], "1万回の失敗を「うまくいかない方法を1万通り発見しただけ」と捉えるポジティブさと事業化の手腕で世界を明るく照らしました。"],
+            ["ニコラ・テスラ", "世界史", "科学・芸術・探検", "⚡", "交流送電システムや無線技術を構想し100年先の未来を見通していた孤高の天才発明家", [10,6,3,10,9,8], "頭の中だけで精密な機械を組み立てて試運転できる驚異の視覚的想像力を持ち、現代の電力網の基礎を創りました。"],
+            ["チャールズ・ダーウィン", "世界史", "科学・芸術・探検", "🐢", "ビーグル号での世界航海と20年の緻密な観察から『種の起源』進化論を著した博物学者", [10,6,7,10,8,8], "ガラパゴス諸島の生き物たちの観察から自然選択による進化のメカニズムを発見し、生命観にコペルニクス的転換をもたらしました。"],
+            ["ルイ・パスツール", "世界史", "科学・芸術・探検", "🔬", "「幸運は準備された心にのみ宿る」低温殺菌法とワクチンで幾千万の命を救った科学者", [9,8,8,10,9,6], "微生物が発酵や病気の原因であることを証明し、狂犬病ワクチンの開発など近代医学・衛生学に計り知れない貢献を果たしました。"],
+            ["マイケル・ファラデー", "世界史", "科学・芸術・探検", "🧲", "貧しい製本見習いから独学で電磁誘導を発見し『ロウソクの科学』を語った実験の達人", [10,7,9,9,8,8], "高度な数式を使わず直感と徹底した実験でモーターや発電機の原理を発見し、子どもたちに向けた科学講演も大切にしました。"],
+            ["ジェームズ・ワット", "世界史", "科学・芸術・探検", "🚂", "蒸気機関の画期的な改良によって人類を産業革命へと加速させたエンジニア", [9,7,6,10,7,5], "従来の非効率な蒸気機関に分離凝縮器という発明を加えることでエネルギー効率を飛躍的に高め、世界の工場を動かしました。"],
+            ["ライト兄弟(ウィルバー&オーヴィル)", "世界史", "科学・芸術・探検", "✈️", "自転車屋の技術と不屈の実験精神で人類の「空を飛ぶ夢」を実現した兄弟", [10,9,8,9,9,5], "巨額の予算を持つ研究機関が失敗するなか、自作の風洞実験装置と息の合ったチームワークで世界初の動力飛行に成功しました。"],
+            ["アラン・チューリング", "世界史", "科学・芸術・探検", "💻", "エニグマ暗号を解読し現代コンピュータと人工知能(AI)の理論を創始した数学の天才", [10,6,4,10,8,7], "「計算とは何か」「機械は思考できるか」という根本的な問いからチューリング・マシンを考案し、情報化時代の扉を開きました。"],
+            ["エイダ・ラブレース", "世界史", "科学・芸術・探検", "🔢", "詩人バイロンの娘にして世界初のコンピュータ・プログラムを記述した「詩的な科学者」", [10,5,6,10,7,10], "バベッジの解析機関が単なる計算機を超え、音楽や芸術さえも記号化して扱える未来のコンピュータになることを19世紀に見抜きました。"],
+            ["アレクサンダー・グラハム・ベル", "世界史", "科学・芸術・探検", "☎️", "聴覚障害者教育への情熱から「電話」を発明し世界の距離を縮めた発明家", [9,8,9,8,8,7], "耳の不自由な母や妻のために音声の仕組みを研究する過程で電話を発明し、ヘレン・ケラーの支援者としても尽力しました。"],
+            ["アルフレッド・ノーベル", "世界史", "科学・芸術・探検", "🧨", "ダイナマイトを発明し莫大な遺産を人類に貢献した人々への「ノーベル賞」に託した化学者", [9,8,7,9,8,8], "安全な爆薬の開発で巨万の富を築きつつ、自らの発明が戦争に使われることに苦悩し、科学と平和の発展を願う賞を創設しました。"],
+            ["ロアルド・アムンセン", "世界史", "科学・芸術・探検", "🛷", "徹底した準備とイヌイットの知恵への敬意で人類初の南極点到達を果たした探検家", [8,9,7,10,9,5], "精神論に頼らず、極地で暮らす先住民の犬ぞりや毛皮の衣装を謙虚に学び取り、緻密な計画によって全員生還で初到達を成し遂げました。"],
+            ["アーネスト・シャクルトン", "世界史", "科学・芸術・探検", "🧊", "南極の氷海に船が沈む絶体絶命の遭難から乗組員28人全員を生還させた究極のリーダー", [7,10,10,8,10,5], "南極大陸横断の夢を断念してでも「部下の命を全員無事に帰す」ことに目標を切り替え、約2年間の極限サバイバルを率い抜きました。"],
+            ["ニール・アームストロング", "世界史", "科学・芸術・探検", "🌕", "「これは一人の人間には小さな一歩だが人類には偉大な飛躍だ」月面に立った最初の宇宙飛行士", [8,9,7,10,8,6], "着陸直前のトラブルでも心拍数を乱すことなく手動操縦でアポロ11号を月面へ導いた、冷静沈着なテストパイロットです。"],
+            ["ユーリ・ガガーリン", "世界史", "科学・芸術・探検", "🚀", "「地球は青かった」人類で初めて宇宙空間へ飛び出した笑顔と勇気の飛行士", [8,10,9,7,9,6], "生還率が決して高くない人類初の有人宇宙飛行に挑み、極限の緊張のなかでも明るいユーモアで世界中に希望を届けました。"],
+            ["ハワード・カーター", "世界史", "科学・芸術・探検", "🏺", "周囲に諦められても掘り続けツタンカーメン王の黄金の墓を発見した情熱の考古学者", [7,8,5,8,10,9], "王家の谷にはもう何もないと言われ資金打ち切り寸前になった最後のシーズンに、歴史的な世紀の大発見を成し遂げました。"],
+            ["ハインリヒ・シュリーマン", "世界史", "科学・芸術・探検", "🏛️", "少年時代の夢を信じて実業家で財を成し「トロイア遺跡」を掘り当てたロマンの人", [8,10,5,8,10,8], "10ヶ国語以上を独自の勉強法で習得して商売で大成功を収め、神話だと笑われていたホメロスの世界が史実であることを証明しました。"],
+            ["ジャン＝フランソワ・シャンポリオン", "世界史", "科学・芸術・探検", "🪨", "ロゼッタ・ストーンの謎に挑み古代エジプトのヒエログリフを解読した天才言語学者", [9,6,5,10,10,9], "十数言語を操る語学力と寝食を忘れるほどの集中力で、千年以上誰も読めなかった古代文明の言葉を蘇らせました。"],
+            ["ヨハン・ゼバスティアン・バッハ", "世界史", "科学・芸術・探検", "🎹", "数学的秩序と深い祈りを融合させ西洋音楽の揺るぎない土台を築いた「音楽の父」", [8,6,7,10,8,10], "緻密な対位法と豊かな和声によって、理性的でありながら魂の奥底に響く普遍的な音楽の宇宙を創り上げました。"],
+            ["ヴォルフガング・アマデウス・モーツァルト", "世界史", "科学・芸術・探検", "🎼", "天から降り注ぐような純粋で完璧なメロディを生涯紡ぎ続けた天衣無縫の音楽天才", [10,7,6,6,8,10], "幼少期からヨーロッパ中を驚嘆させ、オペラから交響曲まで、悲しみの中にも光を宿す奇跡のような名曲を残しました。"],
+            ["ルートヴィヒ・ヴァン・ベートーヴェン", "世界史", "科学・芸術・探検", "🔥", "聴力を失う絶望を乗り越え『運命』『第九』で人類愛と歓喜を鳴り響かせた「楽聖」", [10,8,4,7,10,10], "貴族の従属物だった音楽家を自立した芸術家へと高め、「苦悩を突き抜けて歓喜へ」至る不屈の魂を音に刻みました。"],
+            ["フレデリック・ショパン", "世界史", "科学・芸術・探検", "🎹", "祖国ポーランドへの熱い想いと繊細な詩情を鍵盤に託した「ピアノの詩人」", [8,4,6,6,9,10], "大オーケストラではなくピアノひとつにこだわり抜き、宝石のように繊細で情熱的なノクターンやポロネーズを生み出しました。"],
+            ["フィンセント・ファン・ゴッホ", "世界史", "科学・芸術・探検", "🌻", "生前はほとんど評価されずとも魂の炎をカンヴァスに叩きつけた情熱の画家", [10,7,5,3,10,10], "うねるような筆致と鮮やかな色彩で『ひまわり』『星月夜』を描き、自らの生き様そのものを芸術へと昇華させました。"],
+            ["クロード・モネ", "世界史", "科学・芸術・探検", "🪷", "移ろいゆく光と色彩の瞬間を捉え「印象派」の扉を開いた光の画家", [9,6,7,6,8,10], "アトリエを出て自然の光の下で描き続け、晩年は白内障と闘いながらジヴェルニーの庭の『睡蓮』を連作として極めました。"],
+            ["パブロ・ピカソ", "世界史", "科学・芸術・探検", "🎨", "キュビスムから『ゲルニカ』まで常に自分のスタイルすら破壊し続けた20世紀美術の怪物", [10,9,5,7,9,10], "「子どもみたいに描くのに一生かかった」と語り、伝統的な遠近法を解体して多角的な視点から世界を再構築しました。"],
+            ["ココ・シャネル", "世界史", "科学・芸術・探検", "👗", "コルセットから女性を解放し機能美と自立のエレガンスを創り上げたファッション革命家", [10,9,5,8,9,10], "「流行は色褪せるがスタイルは永遠」と語り、喪服の色だった黒をモードに変え、働く女性の自由な生き方をデザインしました。"],
+            ["ヨハン・ヴォルフガング・フォン・ゲーテ", "世界史", "科学・芸術・探検", "🖋️", "『ファウスト』の文豪でありながら政治家・自然科学者としても生きた知の巨人", [8,7,8,9,9,10], "青春の情熱から円熟の古典主義、色彩論や植物学の研究まで、人間の持つあらゆる可能性を生涯かけて追求しました。"],
+            ["ハンス・クリスチャン・アンデルセン", "世界史", "科学・芸術・探検", "🦢", "貧しい靴屋の息子から世界中の子どもと大人の心に残る物語を紡いだ童話の王様", [8,5,8,5,8,10], "『みにくいアヒルの子』『人魚姫』など、自らの孤独や痛みを優しい想像力に変えて普遍的な物語を生み出しました。"],
+            ["チャールズ・ディケンズ", "世界史", "科学・芸術・探検", "🎄", "『クリスマス・キャロル』『オリバー・ツイスト』で弱者への愛と社会批評を描いた国民作家", [8,7,9,7,9,10], "少年時代の工場労働の原体験から、産業革命の陰で苦しむ子どもたちや貧困層の姿をユーモアと温かい人間愛で描きました。"],
+            ["レフ・トルストイ", "世界史", "科学・芸術・探検", "🌾", "『戦争と平和』で人間と歴史の叙事詩を描き晩年は非暴力と愛の思想を実践した文豪", [8,6,9,8,10,10], "伯爵の地位にありながら農民と共に働き、人生の意味と愛のあり方をどこまでも誠実に問い続けました。"],
+            ["フョードル・ドストエフスキー", "世界史", "科学・芸術・探検", "🕯️", "死刑執行直前の極限体験を経て『罪と罰』『カラマーゾフの兄弟』で魂の深淵を描いた作家", [9,5,7,8,10,10], "人間の内面に潜む悪と、それを超える信仰や救済のドラマを、読む者の心を激しく揺さぶる筆致で描き切りました。"],
+            ["アントワーヌ・ド・サン＝テグジュペリ", "世界史", "科学・芸術・探検", "🦊", "夜間飛行のパイロットとして空を飛び『星の王子さま』で「大切なものは目に見えない」と綴った詩人", [8,9,9,6,9,10], "砂漠への不時着など命がけの飛行体験のなかで、人と人との絆（飼いならすこと）や責任の尊さを澄み切った言葉で残しました。"],
+            ["チャールズ・チャップリン", "世界史", "科学・芸術・探検", "🎩", "山高帽とステッキの放浪紳士で世界を笑わせ『独裁者』で人間の尊厳を叫んだ映画の王様", [10,8,9,8,9,10], "監督・脚本・主演・音楽のすべてを自ら手掛け、言葉の壁を超えるパントマイムとペーソスで庶民の悲哀と希望を表現しました。"]
+        ];
+
+        // Transform RAW_FIGURES into structured objects
+        const FIGURES_DB = RAW_FIGURES.map((item, idx) => ({
+            id: idx + 1,
+            name: item[0],
+            region: item[1],
+            era: item[2],
+            emoji: item[3],
+            title: item[4],
+            scores: item[5], // [INN, ACT, EMP, LOG, PAS, CUL] (1-10)
+            desc: item[6]
+        }));
+
+        /**
+         * Main Application Controller
+         */
+        const app = {
+            currentQuestionIndex: 0,
+            isTransitioning: false,
+            answers: new Array(QUESTIONS.length).fill(null), // Stores values -2, -1, 0, 1, 2
+            userScores: [5, 5, 5, 5, 5, 5], // Normalized 1.0 - 10.0 on the 6 axes
+            rankedResults: [],
+            resultFilter: 'ALL', // 'ALL', 'JP', 'WD'
+
+            init() {
+                // Set dynamic count badges
+                document.getElementById('total-char-badge').textContent = FIGURES_DB.length;
+                document.getElementById('modal-total-count').textContent = FIGURES_DB.length;
+                document.getElementById('total-q-num').textContent = QUESTIONS.length;
+
+                // Handle resize for canvas redraw
+                window.addEventListener('resize', () => {
+                    if (!document.getElementById('result-screen').classList.contains('hidden') && this.rankedResults.length > 0) {
+                        const filtered = this.getFilteredResults();
+                        if (filtered.length > 0) {
+                            this.drawRadarChart(this.userScores, filtered[0].figure.scores);
+                        }
+                    }
+                });
+            },
+
+            showScreen(screenName) {
+                ['start', 'quiz', 'result'].forEach(s => {
+                    document.getElementById(`${s}-screen`).classList.add('hidden');
+                });
+                document.getElementById(`${screenName}-screen`).classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            startQuiz() {
+                this.currentQuestionIndex = 0;
+                this.isTransitioning = false;
+                this.answers = new Array(QUESTIONS.length).fill(null);
+                this.showScreen('quiz');
+                this.renderQuestion();
+            },
+
+            renderQuestion() {
+                const q = QUESTIONS[this.currentQuestionIndex];
+                document.getElementById('quiz-category-badge').textContent = q.category;
+                document.getElementById('current-q-num').textContent = this.currentQuestionIndex + 1;
+                document.getElementById('question-text').textContent = `Q${this.currentQuestionIndex + 1}. ${q.text}`;
+
+                const progressPercent = ((this.currentQuestionIndex + 1) / QUESTIONS.length) * 100;
+                document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+                const prevBtn = document.getElementById('prev-btn');
+                prevBtn.disabled = this.currentQuestionIndex === 0;
+
+                const options = [
+                    { label: 'とてもそう思う', val: 2, icon: 'fa-angles-up', colorClass: 'border-amber-300 hover:border-amber-500' },
+                    { label: 'ややそう思う', val: 1, icon: 'fa-angle-up', colorClass: 'border-slate-200 hover:border-amber-400' },
+                    { label: 'どちらともいえない', val: 0, icon: 'fa-minus', colorClass: 'border-slate-200 hover:border-slate-400' },
+                    { label: 'あまりそう思わない', val: -1, icon: 'fa-angle-down', colorClass: 'border-slate-200 hover:border-slate-400' },
+                    { label: '全くそう思わない', val: -2, icon: 'fa-angles-down', colorClass: 'border-slate-200 hover:border-slate-500' }
+                ];
+
+                const currentAnswer = this.answers[this.currentQuestionIndex];
+                const container = document.getElementById('options-container');
+                container.innerHTML = options.map(opt => {
+                    const isSelected = currentAnswer === opt.val ? 'selected' : '';
+                    return `
+                        <button onclick="app.selectOption(${opt.val})" class="option-btn ${isSelected} w-full p-4 rounded-2xl bg-white border-2 ${opt.colorClass} text-left flex items-center justify-between group focus:outline-none">
+                            <span class="text-sm sm:text-base text-slate-800 group-hover:text-amber-900">${opt.label}</span>
+                            <div class="w-7 h-7 rounded-full bg-slate-100 group-hover:bg-amber-100 flex items-center justify-center text-slate-400 group-hover:text-amber-700 text-xs">
+                                <i class="fa-solid ${opt.icon}"></i>
+                            </div>
+                        </button>
+                    `;
+                }).join('');
+            },
+
+            selectOption(val) {
+                if (this.isTransitioning) return;
+                this.isTransitioning = true;
+                this.answers[this.currentQuestionIndex] = val;
+                this.renderQuestion(); // Highlight selection
+
+                setTimeout(() => {
+                    if (this.currentQuestionIndex < QUESTIONS.length - 1) {
+                        this.currentQuestionIndex++;
+                        this.isTransitioning = false;
+                        this.renderQuestion();
+                    } else {
+                        this.isTransitioning = false;
+                        this.calculateAndShowResults();
+                    }
+                }, 180);
+            },
+
+            prevQuestion() {
+                if (this.isTransitioning) return;
+                if (this.currentQuestionIndex > 0) {
+                    this.currentQuestionIndex--;
+                    this.renderQuestion();
+                }
+            },
+
+            restartQuizConfirm() {
+                document.getElementById('confirm-modal').classList.remove('hidden');
+            },
+
+            closeConfirmModal() {
+                document.getElementById('confirm-modal').classList.add('hidden');
+            },
+
+            confirmRestart() {
+                this.closeConfirmModal();
+                this.startQuiz();
+            },
+
+            calculateAndShowResults() {
+                // 1. Calculate raw axis sums and maximum possible bounds per axis
+                const rawSums = [0, 0, 0, 0, 0, 0];
+                const maxPos = [0, 0, 0, 0, 0, 0];
+
+                QUESTIONS.forEach((q, qIdx) => {
+                    const ans = this.answers[qIdx] !== null ? this.answers[qIdx] : 0; // -2 to +2
+                    for (let a = 0; a < 6; a++) {
+                        const w = q.weights[a];
+                        rawSums[a] += ans * w;
+                        maxPos[a] += 2 * Math.abs(w);
+                    }
+                });
+
+                // Normalize each axis to 1.0 - 10.0 scale (with slight contrast boost so extremes reach 1-10)
+                this.userScores = rawSums.map((sum, a) => {
+                    const ratio = maxPos[a] > 0 ? (sum / maxPos[a]) : 0; // -1.0 to +1.0
+                    const boosted = Math.max(-1, Math.min(1, ratio * 1.18));
+                    const score = 5.5 + boosted * 4.5;
+                    return Math.round(score * 10) / 10;
+                });
+
+                // 2. Compare userScores against all 216 figures using Euclidean distance + pattern cosine
+                this.rankedResults = FIGURES_DB.map(fig => {
+                    let sqDiffSum = 0;
+                    for (let a = 0; a < 6; a++) {
+                        const diff = this.userScores[a] - fig.scores[a];
+                        sqDiffSum += diff * diff;
+                    }
+                    const distance = Math.sqrt(sqDiffSum); // Max theoretical distance is sqrt(6 * 81) = 22.04
+                    // Convert distance into intuitive percentage (40% - 99%)
+                    const rawSim = Math.max(0, 1 - (distance / 15.5));
+                    const matchPercent = Math.min(99, Math.max(38, Math.round(45 + rawSim * 54)));
+
+                    return {
+                        figure: fig,
+                        distance: distance,
+                        matchPercent: matchPercent,
+                        reason: this.generateMatchReason(this.userScores, fig)
+                    };
+                }).sort((a, b) => a.distance - b.distance);
+
+                this.resultFilter = 'ALL';
+                this.showScreen('result');
+                this.renderResultsView();
+            },
+
+            generateMatchReason(userScores, fig) {
+                // Find the top 2 axes where both user and figure score high, or where their alignment is closest
+                const axisMatches = [];
+                for (let a = 0; a < 6; a++) {
+                    const u = userScores[a];
+                    const f = fig.scores[a];
+                    const closeness = 10 - Math.abs(u - f);
+                    const prominence = (u + f) / 2;
+                    axisMatches.push({
+                        idx: a,
+                        u,
+                        f,
+                        score: closeness * 0.6 + prominence * 0.4
+                    });
+                }
+                axisMatches.sort((x, y) => y.score - x.score);
+
+                const topA = AXES_INFO[axisMatches[0].idx];
+                const secondA = AXES_INFO[axisMatches[1].idx];
+
+                const traitDesc1 = axisMatches[0].u >= 5.5 ? topA.highText : topA.lowText;
+                const traitDesc2 = axisMatches[1].u >= 5.5 ? secondA.highText : secondA.lowText;
+
+                return `特に「${topA.name}」と「${secondA.name}」のバランスにおいて高い波長の一致が見られます。あなたの「${traitDesc1}」という特性や、「${traitDesc2}」という価値観が、${fig.name}の生き様と強く共鳴しています。`;
+            },
+
+            setResultFilter(filterType) {
+                this.resultFilter = filterType;
+                ['ALL', 'JP', 'WD'].forEach(f => {
+                    const btn = document.getElementById(`filter-btn-${f}`);
+                    if (f === filterType) {
+                        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition-all';
+                    } else {
+                        btn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition-all';
+                    }
+                });
+                this.renderResultsView();
+            },
+
+            getFilteredResults() {
+                if (this.resultFilter === 'JP') {
+                    return this.rankedResults.filter(r => r.figure.region === '日本史');
+                }
+                if (this.resultFilter === 'WD') {
+                    return this.rankedResults.filter(r => r.figure.region === '世界史');
+                }
+                return this.rankedResults;
+            },
+
+            renderResultsView() {
+                const list = this.getFilteredResults();
+                if (!list.length) return;
+
+                const top1 = list[0];
+                const fig1 = top1.figure;
+
+                // Populate Top 1 Hero
+                document.getElementById('top1-emoji').textContent = fig1.emoji;
+                document.getElementById('top1-region-tag').textContent = fig1.region;
+                document.getElementById('top1-score').textContent = top1.matchPercent;
+                document.getElementById('top1-title').textContent = fig1.title;
+                document.getElementById('top1-name').textContent = fig1.name;
+                document.getElementById('top1-desc').textContent = fig1.desc;
+                document.getElementById('top1-reason').textContent = top1.reason;
+                document.getElementById('chart-legend-name').textContent = fig1.name;
+
+                // Top 1 Badges (Era + Top 2 highest traits of figure)
+                const sortedFigAxes = fig1.scores
+                    .map((val, i) => ({ name: AXES_INFO[i].short, val }))
+                    .sort((a, b) => b.val - a.val);
+
+                document.getElementById('top1-badges').innerHTML = `
+                    <span class="px-3 py-1 rounded-full bg-slate-800 text-amber-300 text-xs font-bold">${fig1.era}</span>
+                    <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold">強み：${sortedFigAxes[0].name}・${sortedFigAxes[1].name}</span>
+                `;
+
+                // Render 6-Axis Bars
+                const barsContainer = document.getElementById('user-axes-bars');
+                barsContainer.innerHTML = AXES_INFO.map((axis, idx) => {
+                    const uVal = this.userScores[idx];
+                    const fVal = fig1.scores[idx];
+                    const uPercent = (uVal / 10) * 100;
+                    return `
+                        <div>
+                            <div class="flex items-center justify-between text-xs mb-1">
+                                <span class="font-bold text-slate-700 flex items-center gap-1.5">
+                                    <i class="fa-solid ${axis.icon}" style="color:${axis.color}"></i>
+                                    ${axis.name}
+                                </span>
+                                <span class="text-slate-600">
+                                    あなた: <strong class="text-slate-900">${uVal.toFixed(1)}</strong> / 10
+                                    <span class="text-[11px] text-slate-400 ml-1">(${fig1.name}: ${fVal})</span>
+                                </span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden relative">
+                                <div class="h-full rounded-full transition-all duration-500" style="width:${uPercent}%; background-color:${axis.color}"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // User Type Summary Box
+                const userSortedAxes = this.userScores
+                    .map((val, idx) => ({ ...AXES_INFO[idx], val }))
+                    .sort((a, b) => b.val - a.val);
+                document.getElementById('user-type-summary').innerHTML = `
+                    <div class="font-bold text-amber-400 mb-1"><i class="fa-solid fa-compass-drafting mr-1.5"></i>あなたのパーソナリティ総評</div>
+                    あなたの中で最も際立っているのは<strong>「${userSortedAxes[0].name}（${userSortedAxes[0].val.toFixed(1)}）」</strong>と<strong>「${userSortedAxes[1].name}（${userSortedAxes[1].val.toFixed(1)}）」</strong>です。
+                    ${userSortedAxes[0].highText}傾向があり、歴史の転換点においては<strong>「${fig1.title}」</strong>である${fig1.name}のように存在感を発揮するタイプといえます。
+                `;
+
+                // Render Rank 2 to 5
+                const subList = list.slice(1, 5);
+                const subContainer = document.getElementById('sub-rankings-container');
+                subContainer.innerHTML = subList.map((item, idx) => {
+                    const rank = idx + 2;
+                    const f = item.figure;
+                    return `
+                        <div class="bg-white/90 rounded-2xl p-5 border border-slate-200/90 hover:border-amber-400 transition-all flex flex-col justify-between shadow-sm">
+                            <div>
+                                <div class="flex items-start justify-between gap-3 mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center text-2xl shrink-0 shadow">
+                                            ${f.emoji}
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold text-[11px]">第${rank}位</span>
+                                                <span class="text-[11px] text-slate-500 font-medium">${f.region} / ${f.era}</span>
+                                            </div>
+                                            <h4 class="font-serif-jp font-bold text-lg text-slate-900 mt-0.5">${f.name}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="text-[10px] text-slate-400 font-bold">シンクロ率</div>
+                                        <div class="text-base font-extrabold text-amber-700">${item.matchPercent}%</div>
+                                    </div>
+                                </div>
+                                <div class="text-xs font-bold text-amber-800 mb-1.5">「${f.title}」</div>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-3">${f.desc}</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-100 text-[11px] text-slate-500 leading-relaxed">
+                                <i class="fa-solid fa-check text-amber-600 mr-1"></i>${item.reason}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Opposite Figure (Last item in list)
+                const opposite = list[list.length - 1];
+                if (opposite) {
+                    document.getElementById('opposite-emoji').textContent = opposite.figure.emoji;
+                    document.getElementById('opposite-name').textContent = `${opposite.figure.name}（${opposite.figure.region}・${opposite.figure.era}）`;
+                    document.getElementById('opposite-score').textContent = `(シンクロ率 ${opposite.matchPercent}%)`;
+                    document.getElementById('opposite-desc').textContent = `「${opposite.figure.title}」— あなたとは異なるアプローチを持つため、ペアを組むとお互いの弱点を補い合える関係です。`;
+                }
+
+                // Draw Radar Chart
+                setTimeout(() => {
+                    this.drawRadarChart(this.userScores, fig1.scores);
+                }, 50);
+            },
+
+            drawRadarChart(userScores, figScores) {
+                const canvas = document.getElementById('radarCanvas');
+                if (!canvas) return;
+                const rect = canvas.parentElement.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                const size = Math.min(rect.width, 320);
+
+                canvas.width = size * dpr;
+                canvas.height = size * dpr;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(dpr, dpr);
+
+                const cx = size / 2;
+                const cy = size / 2;
+                const radius = size * 0.34;
+                const totalAxes = 6;
+
+                ctx.clearRect(0, 0, size, size);
+
+                // Draw background concentric hexagons (levels 2, 4, 6, 8, 10)
+                for (let level = 2; level <= 10; level += 2) {
+                    const r = (level / 10) * radius;
+                    ctx.beginPath();
+                    for (let i = 0; i < totalAxes; i++) {
+                        const angle = (Math.PI * 2 * i) / totalAxes - Math.PI / 2;
+                        const x = cx + r * Math.cos(angle);
+                        const y = cy + r * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                    ctx.strokeStyle = level === 10 ? '#cbd5e1' : '#e2e8f0';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+
+                // Draw Axis Spoke Lines & Labels
+                ctx.font = 'bold 11px "Noto Sans JP", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                for (let i = 0; i < totalAxes; i++) {
+                    const angle = (Math.PI * 2 * i) / totalAxes - Math.PI / 2;
+                    const xEnd = cx + radius * Math.cos(angle);
+                    const yEnd = cy + radius * Math.sin(angle);
+
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(xEnd, yEnd);
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.stroke();
+
+                    // Label position
+                    const labelR = radius + 24;
+                    const lx = cx + labelR * Math.cos(angle);
+                    const ly = cy + labelR * Math.sin(angle);
+                    ctx.fillStyle = '#334155';
+                    ctx.fillText(AXES_INFO[i].short, lx, ly);
+                }
+
+                // Helper to draw polygon
+                const drawDataPolygon = (scores, fillStyle, strokeStyle, lineDash = []) => {
+                    ctx.beginPath();
+                    ctx.setLineDash(lineDash);
+                    for (let i = 0; i < totalAxes; i++) {
+                        const val = Math.max(1, Math.min(10, scores[i]));
+                        const r = (val / 10) * radius;
+                        const angle = (Math.PI * 2 * i) / totalAxes - Math.PI / 2;
+                        const x = cx + r * Math.cos(angle);
+                        const y = cy + r * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = fillStyle;
+                    ctx.fill();
+                    ctx.strokeStyle = strokeStyle;
+                    ctx.lineWidth = 2.2;
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                };
+
+                // Draw Top1 Figure Polygon (Gold)
+                drawDataPolygon(figScores, 'rgba(217, 119, 6, 0.16)', '#d97706', [4, 3]);
+
+                // Draw User Polygon (Blue)
+                drawDataPolygon(userScores, 'rgba(37, 99, 235, 0.22)', '#2563eb');
+            },
+
+            getShareText() {
+                const list = this.getFilteredResults();
+                if (!list.length) return '';
+                const top1 = list[0];
+                const top2 = list[1];
+                const top3 = list[2];
+
+                return `【歴史人物ソナー】${FIGURES_DB.length}人の偉人から導く魂の共鳴診断\n` +
+                       `私に最も近い歴史上の人物は…\n\n` +
+                       `👑 第1位：${top1.figure.name}（シンクロ率 ${top1.matchPercent}%）\n` +
+                       `「${top1.figure.title}」\n` +
+                       `🥈 第2位：${top2.figure.name}（${top2.matchPercent}%）\n` +
+                       `🥉 第3位：${top3.figure.name}（${top3.matchPercent}%）\n\n` +
+                       `#歴史人物診断 #歴史人物ソナー`;
+            },
+
+            copyResultText() {
+                const text = this.getShareText();
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    this.showToast('診断結果をクリップボードにコピーしました！');
+                } catch (e) {
+                    this.showToast('コピーに失敗しました');
+                }
+                document.body.removeChild(textarea);
+            },
+
+            shareOnX() {
+                const text = encodeURIComponent(this.getShareText());
+                window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank', 'noopener,noreferrer');
+            },
+
+            async downloadPDF() {
+                const resultEl = document.getElementById('result-screen');
+                const btn = document.getElementById('download-pdf-btn');
+                if (!resultEl) return;
+
+                if (typeof html2pdf === 'undefined') {
+                    this.printResult();
+                    return;
+                }
+
+                const originalHtml = btn ? btn.innerHTML : '';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>PDFを生成中...</span>';
+                }
+                this.showToast('PDFファイルを生成しています。少々お待ちください...');
+
+                // Temporarily hide .no-print elements inside #result-screen
+                const noPrintEls = resultEl.querySelectorAll('.no-print');
+                noPrintEls.forEach(el => el.classList.add('hidden'));
+
+                const topName = (this.getFilteredResults()[0]?.figure?.name) || '診断結果';
+                const opt = {
+                    margin:       [8, 8, 8, 8],
+                    filename:     `歴史人物ソナー_${topName}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#f8f5f0', scrollY: 0 },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+
+                try {
+                    await html2pdf().set(opt).from(resultEl).save();
+                    this.showToast('PDFのダウンロードが完了しました！');
+                } catch (err) {
+                    console.error('PDF generation error:', err);
+                    this.showToast('PDF生成に失敗したため印刷画面を開きます');
+                    this.printResult();
+                } finally {
+                    noPrintEls.forEach(el => el.classList.remove('hidden'));
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = originalHtml;
+                    }
+                }
+            },
+
+            printResult() {
+                const resultEl = document.getElementById('result-screen');
+                if (!resultEl) return;
+
+                // Convert radar canvas to data URL so it transfers cleanly to a print window
+                const origCanvas = document.getElementById('radarCanvas');
+                const canvasDataUrl = origCanvas ? origCanvas.toDataURL('image/png') : '';
+
+                const printWin = window.open('', '_blank', 'width=900,height=800');
+                if (!printWin) {
+                    // Fallback if popup is blocked: use inline window.print()
+                    window.focus();
+                    window.print();
+                    return;
+                }
+
+                // Clone result HTML and replace canvas with static image for reliable printing
+                const clone = resultEl.cloneNode(true);
+                clone.querySelectorAll('.no-print').forEach(el => el.remove());
+                const clonedCanvas = clone.querySelector('#radarCanvas');
+                if (clonedCanvas && canvasDataUrl) {
+                    const img = document.createElement('img');
+                    img.src = canvasDataUrl;
+                    img.style.width = '280px';
+                    img.style.height = '280px';
+                    img.style.margin = '0 auto';
+                    clonedCanvas.parentNode.replaceChild(img, clonedCanvas);
+                }
+
+                printWin.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="ja">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>歴史人物ソナー - 診断結果</title>
+                        <script src="https://cdn.tailwindcss.com"><\/script>
+                        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                        <style>
+                            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                            body { font-family: 'Noto Sans JP', sans-serif; background: #ffffff; color: #1e293b; padding: 24px; }
+                            .font-serif-jp { font-family: 'Shippori Mincho', serif; }
+                            .glass-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 24px; padding: 24px; margin-bottom: 20px; break-inside: avoid; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="max-w-4xl mx-auto">
+                            ${clone.innerHTML}
+                        </div>
+                        <script>
+                            window.onload = function() {
+                                setTimeout(function() {
+                                    window.focus();
+                                    window.print();
+                                }, 600);
+                            };
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWin.document.close();
+            },
+
+            showToast(msg) {
+                const toast = document.getElementById('toast-notification');
+                document.getElementById('toast-message').textContent = msg;
+                toast.classList.remove('hidden');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 3000);
+            },
+
+            // ==================== DIRECTORY MODAL LOGIC ====================
+            openDirectory() {
+                document.getElementById('directory-modal').classList.remove('hidden');
+                this.renderDirectoryList();
+            },
+
+            closeDirectory() {
+                document.getElementById('directory-modal').classList.add('hidden');
+            },
+
+            renderDirectoryList() {
+                const query = (document.getElementById('dir-search').value || '').trim().toLowerCase();
+                const region = document.getElementById('dir-region-filter').value;
+                const sortMode = document.getElementById('dir-sort').value;
+
+                // Map match scores if user has completed diagnosis
+                const hasRanked = this.rankedResults && this.rankedResults.length > 0;
+                const matchMap = new Map();
+                if (hasRanked) {
+                    this.rankedResults.forEach(r => matchMap.set(r.figure.id, r.matchPercent));
+                }
+
+                let items = FIGURES_DB.filter(fig => {
+                    if (region !== 'ALL' && fig.region !== region) return false;
+                    if (query) {
+                        const hay = `${fig.name} ${fig.era} ${fig.title} ${fig.desc}`.toLowerCase();
+                        return hay.includes(query);
+                    }
+                    return true;
+                });
+
+                if (sortMode === 'MATCH_DESC') {
+                    if (hasRanked) {
+                        items.sort((a, b) => (matchMap.get(b.id) || 0) - (matchMap.get(a.id) || 0));
+                    } else {
+                        this.showToast('先に18問の診断を完了すると類似度順で並び替えられます');
+                    }
+                } else if (sortMode === 'NAME') {
+                    items.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+                }
+
+                const container = document.getElementById('dir-list-container');
+                if (items.length === 0) {
+                    container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 text-sm">該当する歴史人物が見つかりませんでした。検索条件を変更してお試しください。</div>`;
+                    return;
+                }
+
+                container.innerHTML = items.map(fig => {
+                    const matchPct = hasRanked ? matchMap.get(fig.id) : null;
+                    return `
+                        <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center text-xl shrink-0">${fig.emoji}</span>
+                                        <div>
+                                            <div class="text-[10px] font-bold text-slate-400">${fig.region}・${fig.era}</div>
+                                            <h4 class="font-serif-jp font-bold text-base text-slate-900">${fig.name}</h4>
+                                        </div>
+                                    </div>
+                                    ${matchPct !== null ? `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[11px] shrink-0">一致 ${matchPct}%</span>` : ''}
+                                </div>
+                                <div class="text-xs font-bold text-amber-800 mb-1">「${fig.title}」</div>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-3">${fig.desc}</p>
+                            </div>
+                            <div class="grid grid-cols-6 gap-1 pt-2 border-t border-slate-100 text-center text-[10px]">
+                                ${AXES_INFO.map((ax, i) => `
+                                    <div class="bg-slate-50 rounded py-1">
+                                        <div class="text-slate-400">${ax.short.slice(0,2)}</div>
+                                        <div class="font-bold text-slate-700">${fig.scores[i]}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        };
+
+        window.onload = function() {
+            app.init();
+        };
+    </script>
+</body>
+</html>
